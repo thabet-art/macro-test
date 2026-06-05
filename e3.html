@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+
+<html lang="ar" dir="rtl">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>اختبار اللغة الإنجليزية التفاعلي</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+
+        /* تعريف خط Inter ليكون حديثاً ومناسباً */
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
+        body {
+
+            font-family: 'Inter', sans-serif;
+
+            background-color: #f7f9fb;
+
+        }
+
+        /* الألوان المخصصة للإطار */
+
+        .border-correct-full { border-color: #10b981; } /* أخضر كامل */
+
+        .border-incorrect-full { border-color: #ef4444; } /* أحمر كامل */
+
+        /* برتقالي فاتح */
+
+        .border-partial { border-color: #fcd34d; }
+
+        .bg-partial { background-color: #fffbeb; }
+
+        /* ستايل مخصص لزر التحقق ليظهر بشكل جيد */
+
+        .check-button {
+
+            transition: all 0.2s;
+
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+
+        }
+
+        .check-button:hover {
+
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+
+            transform: translateY(-1px);
+
+        }
+
+        /* ستايل الخيارات */
+
+        .option-label {
+
+            transition: background-color 0.3s, border-color 0.3s;
+
+            cursor: pointer;
+
+            border: 2px solid #e5e7eb;
+
+            text-align: left; /* المحاذاة لليسار لخيارات اللغة الإنجليزية */
+
+        }
+
+        .option-label:hover {
+
+            border-color: #6366f1;
+
+        }
+
+        /* إخفاء مربعات الاختيار الأصلية */
+
+        .option-input {
+
+            display: none;
+
+        }
+
+        /* الإجابات بعد التحقق */
+
+        .bg-correct { background-color: #d1fae5; border-color: #10b981; color: #065f46; } /* أخضر فاتح */
+
+        .bg-incorrect { background-color: #fee2e2; border-color: #ef4444; color: #991b1b; } /* أحمر فاتح */
+
+        /* تلوين مربع التحديد عند الاختيار */
+
+        .checked-indicator {
+
+            transition: all 0.15s ease-in-out;
+
+            display: inline-block;
+
+            width: 1rem;
+
+            height: 1rem;
+
+            border-radius: 0.25rem;
+
+            border: 2px solid #6366f1;
+
+            flex-shrink: 0;
+
+            margin-left: 0.75rem; /* مسافة عن النص */
+
+        }
+
+        .option-input:checked + .checked-indicator {
+
+            background-color: #6366f1;
+
+            border-color: #6366f1;
+
+            position: relative;
+
+        }
+
+        /* أيقونة علامة الصح (للتأثير البصري) */
+
+        .option-input:checked + .checked-indicator::after {
+
+            content: '✓';
+
+            color: white;
+
+            font-size: 0.7rem;
+
+            position: absolute;
+
+            top: 50%;
+
+            left: 50%;
+
+            transform: translate(-50%, -50%);
+
+        }
+
+    </style>
+
+</head>
+
+<body class="p-4 sm:p-8">
+
+    <div class="max-w-4xl mx-auto mb-6">
+
+        <a href="https://codepen.io/Alialhaddi/full/ByKmaae" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150"
+           target="_blank">
+
+            <svg class="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+
+            </svg>
+
+            العودة للصفحة الرئيسية
+
+        </a>
+
+    </div>
+
+    <header class="sticky top-0 z-10 p-4 mb-8 bg-white shadow-lg rounded-xl flex justify-between items-center border-b-4 border-indigo-500/50">
+
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-indigo-800">متعدد اللغة الإنجليزية 2</h1>
+
+        <div class="text-xl sm:text-2xl font-bold text-gray-700">
+
+            النتيجة: <span id="total-score" class="text-indigo-600">0.00</span> / <span id="max-score">0</span>
+
+        </div>
+
+    </header>
+
+    <main id="quiz-container" class="max-w-4xl mx-auto space-y-8 pb-10"></main>
+
+    <div id="message-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden items-center justify-center z-50">
+
+        <div class="bg-white p-6 rounded-lg shadow-2xl max-w-sm w-full text-center">
+
+            <h3 class="text-xl font-bold text-indigo-700 mb-4" id="modal-title"></h3>
+
+            <p id="modal-body" class="mb-6 text-gray-600"></p>
+
+            <button onclick="document.getElementById('message-modal').classList.add('hidden')" class="bg-indigo-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-600 transition duration-150">حسناً</button>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        // دالة لعرض رسائل التنبيه بشكل أنيق
+
+        function showMessage(title, body) {
+
+            document.getElementById('modal-title').textContent = title;
+
+            document.getElementById('modal-body').textContent = body;
+
+            document.getElementById('message-modal').classList.remove('hidden');
+
+            document.getElementById('message-modal').classList.add('flex');
+
+        }
+
+        // بيانات الأسئلة
+
+        // ملاحظة: تم إضافة حقل 'translation' لجميع الأسئلة الجديدة
+
+        const quizData = [
+
+            { id: 1, question: "The same phrasal verb of 'get away' is", options: ["go away", "go on", "escape", "lost"], correct: ["go away", "escape"], translation: "الفعل المبني للمجهول لـ 'ابتعد' هو (اذهب بعيدا - استمر - اهرب - ضائع)" },
+
+            { id: 2, question: "The opposite meaning of the word female is", options: ["male", "girl", "man", "masculine"], correct: ["masculine", "male"], translation: "المعنى المعاكس لكلمة أنثى هو (ذكر - فتاة - رجل - مذكر)" },
+
+            { id: 3, question: "opposite of the word 'above' is", options: ["beneath", "below", "deny", "proud"], correct: ["beneath", "below"], translation: "عكس كلمة 'فوق' هو (تحت - اسفل - ينكر - فخور)" },
+
+            { id: 4, question: "The meaning of 'remarkable' is", options: ["interesting", "attention", "wonderful", "splendid"], correct: ["wonderful", "splendid"], translation: "معنى كلمة 'رائع' هو (مثير للاهتمام - اهتمام - رائع - مذهل)" },
+
+            { id: 5, question: "I**.......** nice pictures yesterday", options: ["paints", "painted", "painting", "did not paint"], correct: ["did not paint", "painted"], translation: "أنا ....... صور جميلة أمس (ارسم - رسمت - أرسم - لم أرسم)" },
+
+            { id: 6, question: "What is the meaning of ' improve ' in this sentence Ali want to ' improve' his English, so he practices as much as he can", options: ["study", "Develop", "Be excellent", "test"], correct: ["Be excellent", "Develop"], translation: "ما معنى تحسين في هذه الجملة علي يريد تحسين لغته الإنجليزية، لذلك فهو يمارس قدر استطاعته (دراسة - تطوير - أن يكون ممتازا - اختبار)" },
+
+            { id: 7, question: "The same meaning of the word 'powerful' is......", options: ["strong", "influential", "hand", "give"], correct: ["strong", "influential"], translation: "نفس معنى كلمة قوي هو ....... (قوي - ذو سلطه - يد - يعطي)" },
+
+            { id: 8, question: "The exact meaning of ' hold off' is", options: ["stay away", "has not studies", "be delayed", "has changed"], correct: ["stay away", "be delayed"], translation: "المعنى الدقيق لـ 'ابتعد' هو ........ (ابتعد - لم يدرس - كن بعيدا - تغير)" },
+
+            { id: 9, question: "I ...... university students, and my brother .... too", options: ["am", "back", "next", "is"], correct: ["is", "am"], translation: "أنا ........ طالب جامعي وأخي ..... أيضا" },
+
+            { id: 10, question: "The meaning of ' get rid of ' is", options: ["provide", "remove", "develop", "become free from"], correct: ["remove", "become free from"], translation: "معنى 'تخلص من' هو (توفير - إزالة - تطوير - التحرر من)" },
+
+            { id: 11, question: "The same phrasal verb of 'get on ' is", options: ["move back", "continue working", "get back", "succeed"], correct: ["continue working", "succeed"], translation: "نفس الفعل المبني للمجهول لـ 'استمر' هو (ارجع للخلف - استمر في العمل - ارجع - انجح)" },
+
+            { id: 12, question: "The same meaning of the word 'get back ' is...........", options: ["return", "test", "provide", "move back"], correct: ["return", "move back"], translation: "نفس معنى كلمة 'ارجع' هو (ارجع - اختبر - قدم - تحرك للخلف)" },
+
+            { id: 13, question: "The opposite meaning of the word 'accept' is", options: ["decline", "agree", "reject", "modern"], correct: ["decline", "reject"], translation: "المعنى المعاكس لكلمة 'قبول' هو (رفض - موافقة - رفض - حديث)" },
+
+            { id: 14, question: "The same meaning of the word 'uniqueness' is", options: ["being rare", "counting", "unusual", "join"], correct: ["being rare", "unusual"], translation: "نفس معنى كلمة 'التفرد' هو (كونه نادرا - عد - غير عادي - انضم)" },
+
+            { id: 15, question: "The meaning of expensive is ..........", options: ["high in price", "value", "high in cost", "involving money"], correct: ["high in price", "high in cost"], translation: "معنى غالي الثمن هو ......... (ارتفاع السعر - القيمة - ارتفاع التكلفة يتضمن المال)" },
+
+            { id: 16, question: "\"Ali \"\"has worn\"\" his new clothes\"", options: ["has got on", "has moved", "has covered", "has changed"], correct: ["has covered", "has got on"], translation: "علي 'ارتدى' ملابسه الجديدة (ارتدى - تحرك - غطى - غير )" },
+
+            { id: 17, question: "Opposite of 'accept' is", options: ["reject", "make real", "decline", "beneath"], correct: ["decline", "reject"], translation: "عكس القبول هو ........ (رفض - جعل - رفض - أسفل)" },
+
+            { id: 18, question: "The meaning of the word ' wonderful' in Arabic is", options: ["مدهش", "يتذوق", "رائع", "مستعمل"], correct: ["رائع", "مدهش"], translation: "معنى كلمة رائع في العربية هي ......." },
+
+            { id: 19, question: "..... Can talk, but animals cannot", options: ["plants", "people", "cats", "human beings"], correct: ["people", "human beings"], translation: "..... يمكنهم التحدث، لكن الحيوانات لا تستطيع ذلك (النباتات - ناس - القطط - البشر )" },
+
+            { id: 20, question: "The word ' get on ' means", options: ["go on", "confine", "continue", "decorate"], correct: ["continue", "go on"], translation: "كلمة 'استمر' تعني (استمر - حصر - استمر - تزيين)" },
+
+            { id: 21, question: "\"The meaning of charmed\"\" means\"", options: ["enjoyable", "nice", "very attractive", "usual"], correct: ["very attractive", "enjoyable"], translation: "معنى كلمة جذاب تعني (ممتع - لطيف - جذاب للغاية - عادي)" },
+
+            { id: 22, question: "What is the meaning of ' marvelous ' in this sentence. Yemen has a 'marvelous old forts", options: ["wonderful", "awful", "beautiful", "large"], correct: ["wonderful", "beautiful"], translation: "ما معنى كلمة رائع في هذه الجملة. اليمن لديها (حصون قديمة رائعة - رهيبة - جميلة - كبيرة )" },
+
+            { id: 23, question: "To 'harm' means", options: ["wrong doing", "saying bad", "Damage", "send"], correct: ["wrong doing", "Damage"], translation: "تعني كلمة 'ضرر' (فعل خاطئ - قول سيء - ضرر - إرسال)" },
+
+            { id: 24, question: "Modern houses are ....... than old houses", options: ["attractive", "more beautiful", "more attractive", "very attractive"], correct: ["more beautiful", "more attractive"], translation: "البيوت الحديثة. ....... من البيوت القديمة (جذابة - أجمل - أكثر جاذبية - جذابة للغاية)" },
+
+            { id: 25, question: "To 'abuse' means to", options: ["misuse", "misunderstand", "misapply", "prevent"], correct: ["misuse", "misapply"], translation: "تعنى كلمة 'إساءة' (إساءة الاستخدام - سوء الفهم - سوء التطبيق - منع)" },
+
+            { id: 26, question: "The same meaning of the word 'keep on ' is", options: ["stop", "go on", "continue", "think on"], correct: ["go on", "continue"], translation: "نفس معنى كلمة 'استمر' هو (توقف - استمر - استمر - فكر)" },
+
+            { id: 27, question: "to 'deliver' means to", options: ["offer", "present", "have", "utter"], correct: ["present", "offer"], translation: "'التسليم' يعنى (يقدم - تقديم - الحصول - النطق)" },
+
+            { id: 28, question: "I told him ' to........** The gift", options: ["take", "process", "accept", "excpt"], correct: ["accept", "take"], translation: "قلت له .......... الهدية (خذ - اعالج - اقبل - استبعد)" },
+
+            { id: 29, question: "You ....... these doors", options: ["must shut", "have to shut", "has to shut", "should close"], correct: ["must shut", "should close"], translation: "أنت ......... هذه الأبواب (جميع الخيارات بمعنى يجب اغلاق ولكن بصيغ مختلفة والصحيحة فقط هي من تتناسب مع الحل)" },
+
+            { id: 30, question: "The opposite meaning the word 'arrive' is", options: ["leave", "reach", "depart", "come"], correct: ["leave", "depart"], translation: "المعنى المعاكس لكلمة 'وصول' هو (انصراف - وصول - مغادرة - وصول)" },
+
+            { id: 31, question: "The meaning of escape is", options: ["to observe life", "the living behavior", "go away", "run away"], correct: ["run away", "go away"], translation: "معنى الهروب هو (مراقبة الحياة - سلوك الحي - ابتعد - اهرب)" },
+
+            { id: 32, question: "The meaning of the word wonderful is", options: ["very fine", "still", "great", "prevent"], correct: ["very fine", "great"], translation: "معنى كلمة رائع هو (جيد جدا - لا يزال - رائع - يمنع )" },
+
+            { id: 33, question: "the meaning of charmed means:", options: ["enjoyable", "nice", "very attractive", "usual"], correct: ["very attractive", "enjoyable"], translation: "معنى كلمة جذاب تعني (ممتع - لطيف - جذاب للغاية - عادي)" },
+
+            { id: 34, question: "Mohammed**....** His homework every day:", options: ["write", "does not write", "wrote", "writes"], correct: ["does not write", "writes"], translation: "محمد ..... واجباته اليومية : (يكتبو - لا يكتب - كتب يكتب)" },
+
+            { id: 35, question: "The father**.....** his son a new car", options: ["will give", "will buy", "goes shopping", "must gives"], correct: ["will give", "will buy"], translation: "الأب ...... ابنه سيارة جديدة (سيعطي - سيشتري - يذهب للتسوق - يجب أن يعطي)" },
+
+            { id: 36, question: "the opposite meaning of the word ' allow' is", options: ["forbid", "permit", "prevent", "help"], correct: ["forbid", "prevent"], translation: "المعنى المعاكس لكلمة 'السماح' هو (منع - سمح - منع - مساعدة )" },
+
+            { id: 37, question: "The meaning of develop is", options: ["make", "thought", "grow", "terrible"], correct: ["make", "grow"], translation: "معنى التطور هو .......... (يطور - فكر - ينمو - رهيب)" },
+
+            { id: 38, question: "The Yemeni government does everything to ....... education", options: ["develop", "mentioned", "encourage", "done"], correct: ["develop", "encourage"], translation: "الحكومة اليمنية تفعل كل ما في وسعها من أجل ......... التعليم (تطوير - ذكر - تشجيع - تم)" },
+
+            { id: 39, question: "The meaning of the word in Arabic 'huge' is", options: ["ضخم", "رائع", "معجزة", "كبير جدا"], correct: ["ضخم", "كبير جدا"], translation: "معنى كلمة ضخم في اللغة العربية هو" },
+
+            { id: 40, question: "The phrasal verb get back means", options: ["return", "angry", "move back", "escape"], correct: ["move back", "return"], translation: "الفعل get back يعني (رجوع - غاضب - تراجع - هروب)" },
+
+            { id: 41, question: "I told her 'to ....... The gift", options: ["except", "accept", "manage", "agree"], correct: ["accept", "agree"], translation: "قلت لها ان ......... الهدية (باستثناء - قبول - إدارة - موافقة )" },
+
+            { id: 42, question: "the meaning of the word 'faith' in Arabic is", options: ["ايمان", "عبادة", "معتقد", "صلاة"], correct: ["ايمان", "معتقد"], translation: "معنى كلمة الإيمان في اللغة العربية هو ......." },
+
+            { id: 43, question: "the opposite meaning of the word 'receive' is", options: ["send", "get", "submit", "replace"], correct: ["submit", "send"], translation: "المعنى المعاكس لكلمة 'استلام' هو (إرسال - الحصول - إرسال - استبدال)" },
+
+            { id: 44, question: "....... the nearest meaning of the word ' prohibit' is", options: ["forbid", "still", "hurt", "prevent"], correct: ["forbid", "prevent"], translation: "المعنى الأقرب لكلمة 'منع' هو (منع - أزال - أضر - منع)" },
+
+            { id: 45, question: "The same meaning of the word 'organize', is", options: ["order", "test", "provide", "plan"], correct: ["order", "plan"], translation: "نفس معنى كلمة 'تنظيم' هو (ترتيب - اختبار - توفير - تخطيط )" },
+
+            { id: 46, question: "The opposite meaning of 'beautiful' is", options: ["nice", "ugly", "bad", "fresh"], correct: ["ugly", "bad"], translation: "المعنى المعاكس 'جميل' هو (لطيف - قبيح - سيئ - جديد)" },
+
+            { id: 47, question: "to 'constitute' means", options: ["to form", "to confine", "to establish", "to decorate"], correct: ["to establish", "to form"], translation: "لكلمة 'تكوين' يعني (تشكيل - تحديد - تكوين - تزيين)" },
+
+            { id: 48, question: "The teacher asked her ....... to her name on the paper", options: ["right", "write", "get", "record"], correct: ["record", "write"], translation: "طلبت منها المعلمة ان ......... اسمها على الورقة ( يمين - تكتب - أحصل - تسجل )" },
+
+            { id: 49, question: "What is the meaning of compulsory' in this sentence. education in yemen is 'compulsory' up to the age of sixteen", options: ["must", "voluntary", "obligatory", "optional"], correct: ["must", "obligatory"], translation: "ما معنى كلمة إلزامي في هذه الجملة ؟ التعليم في اليمن 'الزامي' حتى سن السادسة عشر (إجباري - طوعي - إلزامي - اختياري)" },
+
+            { id: 50, question: "The meaning of the word 'atmosphere' in Arabic is", options: ["علاج", "بيئة", "مناخ", "يخفض"], correct: ["بيئة", "مناخ"], translation: "معنى كلمة الغلاف الجوي في اللغة العربية هو" },
+
+            { id: 51, question: "The opposite of the word 'fail' is..........", options: ["Succeed", "Pass", "Block", "No marks"], correct: ["Succeed", "Pass"], translation: "عكس كلمة 'فشل' هو (نجاح - اجتياز - حظر - لا علامات)" },
+
+            { id: 52, question: "The father. ....... his son a new car", options: ["Will give", "Will buy", "Goes shopping", "Must gives"], correct: ["Will give", "Will buy"], translation: "الأب ...... ابنه سيارة جديدة (سيعطي - سيشتري - يذهب للتسوق - يجب أن يعطي)" },
+
+            { id: 53, question: "We have seen in the**........** reading text that the mobile phone has may advantages in all fields of life", options: ["Back", "Next", "earlier", "Previous"], correct: ["earlier", "Previous"], translation: "لقد رأينا في قراءة النص**..........** أن للهاتف المحمول العديد من المزايا في كافة مجالات الحياة (العودة الى - التالي - الماضي - السابق)" },
+
+            { id: 54, question: "The opposite meaning of the word ' above' is", options: ["Beneath", "Below", "Over", "On top"], correct: ["Beneath", "Below"], translation: "المعنى المعاكس لكلمة 'فوق' هو (تحت - اسفل - على - في الأعلى)" },
+
+            { id: 55, question: "The meaning of the word 'discuss' in Arabic is", options: ["يناقش", "يتذوق", "يتحدث عن", "مستعمل"], correct: ["يتحدث عن", "يناقش"], translation: "معنى كلمة discuss بالعربي" },
+
+            { id: 56, question: "What is the meaning of ' protect' in this sentence parents' protect 'their children from danger", options: ["provide", "save", "develop", "keep away"], correct: ["save", "keep away"], translation: "ما معنى كلمة 'حماية' في هذه الجملة (الوالدان يحمون أطفالهما من الخطر يوفرون - يحفظون - يطورون - يبقون بعيد)" },
+
+            { id: 57, question: "Did you .... the problem in the first question?", options: ["solve", "ask question about", "find the answer of", "experiment"], correct: ["solve", "find the answer of"], translation: "هل ....... المشكلة في السؤال الأول ؟ (حللت - اطرح سؤالاً عن - أوجدت إجابة - جرب)" },
+
+            { id: 58, question: "The meaning of the word in Arabic 'addition' is", options: ["إضافة", "مأثور", "زيادة", "قصة"], correct: ["إضافة", "زيادة"], translation: "معنى كلمة addition في اللغة العربية: اضافة- مأثور - زيادة - قصة." },
+
+            { id: 59, question: "The phrasal verb 'give way' means", options: ["escape", "break", "angry", "collapse"], correct: ["break", "collapse"], translation: "الفعل المركب give away يعني (الهروب - الكسر - الغضب - الانهيار )" },
+
+            { id: 60, question: "Opposite of the word ask is**.......**", options: ["answer", "deny", "reply", "proud"], correct: ["answer", "reply"], translation: "عكس كلمة اسأل هو (الإجابة - رفض - رد - فخور)" },
+
+            { id: 61, question: "The same phrasal verb of ' get off ' is**.......**", options: ["to continue", "leave", "to return", "escape"], correct: ["leave", "escape"], translation: "مرادف الفعل المركب (get off) 'ابتعد' هو ... (استمر - غادر - عد - هروب)" },
+
+            { id: 62, question: "The meaning of attractive in English is", options: ["pleasant to look at", "beautiful", "option3", "option4"], correct: ["pleasant to look at", "beautiful"], translation: "معنى كلمة جذاب في اللغة الانجليزية هو (ممتع للنظر - جميل)" },
+
+            { id: 63, question: "\"what is the meaning of \"\" has left\"\" in this sentence Sameer is 18 years old but he has left school.\"", options: ["has gone away", "has changed", "option3", "option4"], correct: ["has gone away", "has changed"], translation: "ما معنى 'لقد غادر' في هذه الجملة سمير يبلغ من العمر 18 عاما ولكنه ترك المدرسة؟" },
+
+        ];
+
+        // متغير لحفظ النتيجة الحالية
+
+        let currentScore = 0;
+
+        let answeredQuestions = {}; // لحفظ حالة التحقق ودرجة كل سؤال
+
+        // نقطة كل سؤال ثابتة (2)
+
+        const SCORE_PER_QUESTION = 2;
+
+        const totalMaxScore = quizData.length * SCORE_PER_QUESTION;
+
+        document.getElementById('max-score').textContent = totalMaxScore.toFixed(2);
+
+        // ----------------------------------------------------------------------
+
+        // 1. منطق احتساب الدرجات (الخطأ يأكل الصواب)
+
+        // ----------------------------------------------------------------------
+
+        // هذه الدالة تعتمد على المنطق الذي طلبته: يتم توزيع الدرجة الكاملة (2) بالتساوي على عدد الخيارات الصحيحة.
+
+        // كل إجابة خاطئة مختارة تخصم قيمة تلك الإجابة الصحيحة.
+
+        function calculateScore(questionId) {
+
+            const questionData = quizData.find(q => q.id === questionId);
+
+            if (!questionData) return 0;
+
+            const form = document.getElementById(`q-form-${questionId}`);
+
+            if (!form) return 0;
+
+            const correctAnswers = questionData.correct;
+
+            const numCorrectOptions = correctAnswers.length;
+
+            // إذا لم يكن هناك إجابات صحيحة محددة مسبقاً، تكون النتيجة صفر
+
+            if (numCorrectOptions === 0) return 0;
+
+            // قيمة كل إجابة صحيحة
+
+            const valuePerCorrectOption = SCORE_PER_QUESTION / numCorrectOptions;
+
+            let correctChosenCount = 0;
+
+            let incorrectChosenCount = 0;
+
+            const inputs = form.querySelectorAll(`input[name="q${questionId}"]:checked`);
+
+            // تحديد الإجابات المختارة
+
+            const selectedOptions = Array.from(inputs).map(input => input.value);
+
+            // 1. حساب الإجابات الصحيحة والخاطئة المختارة
+
+            selectedOptions.forEach(option => {
+
+                if (correctAnswers.includes(option)) {
+
+                    correctChosenCount++;
+
+                } else {
+
+                    incorrectChosenCount++;
+
+                }
+
+            });
+
+            // 2. تطبيق القاعدة: (الصحيح المختار - الخطأ المختار) * قيمة النقطة الواحدة
+
+            let score = correctChosenCount * valuePerCorrectOption;
+
+            const deduction = incorrectChosenCount * valuePerCorrectOption;
+
+            score = score - deduction;
+
+            // التأكد من أن النتيجة لا تقل عن الصفر
+
+            return parseFloat(Math.max(0, score).toFixed(2));
+
+        }
+
+        // ----------------------------------------------------------------------
+
+        // 2. تحديث الواجهة عند التحقق
+
+        // ----------------------------------------------------------------------
+
+        function checkAnswer(questionId) {
+
+            // منع التحقق مرة أخرى
+
+            if (answeredQuestions[questionId]) {
+
+                 showMessage('تم التحقق مسبقاً', 'لقد قمت بالتحقق من هذا السؤال بالفعل.');
+
+                 return;
+
+            }
+
+            const questionData = quizData.find(q => q.id === questionId);
+
+            const form = document.getElementById(`q-form-${questionId}`);
+
+            const questionCard = document.getElementById(`q-card-${questionId}`);
+
+            const checkBtn = document.getElementById(`check-btn-${questionId}`);
+
+            if (!questionData || !form || !questionCard) return;
+
+            const correctAnswers = questionData.correct;
+
+            const inputs = form.querySelectorAll(`input[name="q${questionId}"]`);
+
+            const selectedInputs = form.querySelectorAll(`input[name="q${questionId}"]:checked`);
+
+            let totalCorrectOptions = correctAnswers.length;
+
+            let correctSelected = 0;
+
+            let incorrectSelected = 0;
+
+            // 1. تلوين الخيارات (الأخضر والأحمر) وتجميع الإحصائيات
+
+            inputs.forEach(input => {
+
+                const label = input.closest('label');
+
+                const isCorrect = correctAnswers.includes(input.value);
+
+                const isSelected = input.checked;
+
+                // إزالة التنسيقات الأولية وإضافة مؤشر التعطيل
+
+                label.classList.remove('border-gray-300', 'border-indigo-400', 'border-indigo-500');
+
+                label.classList.add('pointer-events-none');
+
+                // إظهار مربع التحديد كنص ثابت
+
+                const indicator = label.querySelector('.checked-indicator');
+
+                if(indicator) indicator.classList.remove('bg-indigo-500', 'border-indigo-500');
+
+                if (isCorrect) {
+
+                    if (isSelected) {
+
+                        label.classList.add('bg-correct', 'border-green-500');
+
+                        correctSelected++;
+
+                    } else {
+
+                        // خيار صحيح لم يتم اختياره - يتم تلوينه للأخضر لإظهار أنه كان يجب اختياره
+
+                        label.classList.add('bg-correct', 'border-green-500');
+
+                    }
+
+                } else { // خيار خاطئ
+
+                    if (isSelected) {
+
+                        label.classList.add('bg-incorrect', 'border-red-500');
+
+                        incorrectSelected++;
+
+                    }
+
+                }
+
+            });
+
+            // 2. حساب النتيجة وتحديث النتيجة الإجمالية
+
+            const newScore = calculateScore(questionId);
+
+            // حفظ حالة السؤال
+
+            answeredQuestions[questionId] = { checked: true, score: newScore };
+
+            // خصم الدرجة السابقة لهذا السؤال (إذا وجدت) وإضافة الدرجة الجديدة
+
+            currentScore = quizData.map(q => answeredQuestions[q.id]?.score || 0).reduce((a, b) => a + b, 0);
+
+            // 3. تلوين إطار السؤال
+
+            questionCard.classList.remove('border-gray-300', 'border-partial', 'border-correct-full', 'border-incorrect-full');
+
+            let borderColorClass = '';
+
+            let resultHtml = '';
+
+            // الترجمة تظهر دائماً بعد التحقق (في الأسفل)
+
+            const translationHtml = `
+
+                <div dir="rtl" class="text-gray-700 mt-3 p-3 bg-gray-100 rounded-lg border border-gray-300">
+
+                    <p class="font-bold text-lg mb-1 text-indigo-700">ترجمة السؤال:</p>
+
+                    <p>${questionData.translation}</p>
+
+                </div>
+
+            `;
+
+            // الحالة الأولى: الإجابات صحيحة بالكامل (الدرجة = 2)
+
+            if (newScore === SCORE_PER_QUESTION) {
+
+                borderColorClass = 'border-correct-full';
+
+                resultHtml = `<p class="font-bold p-2 text-center rounded-lg bg-green-100 text-green-700">ممتاز! حصلت على الدرجة الكاملة: ${newScore.toFixed(2)} درجة.</p>`;
+
+            }
+
+            // الحالة الثانية: الإجابات خاطئة بالكامل (النتيجة صفر)
+
+            else if (newScore === 0) {
+
+                 borderColorClass = 'border-incorrect-full';
+
+                 resultHtml = `<p class="font-bold p-2 text-center rounded-lg bg-red-100 text-red-700">للأسف، النتيجة: ${newScore.toFixed(2)} درجة. راجع الخيارات الصحيحة والخاطئة.</p>`;
+
+            }
+
+            // الحالة الثالثة: جزئي (النتيجة بين 0 و 2)
+
+            else {
+
+                borderColorClass = 'border-partial';
+
+                resultHtml = `<p class="font-bold p-2 text-center rounded-lg bg-yellow-100 text-yellow-700">نتيجة جزئية: ${newScore.toFixed(2)} درجة. تذكر: الخطأ يأكل الصواب.</p>`;
+
+            }
+
+            questionCard.classList.add(borderColorClass, 'border-4', 'shadow-lg');
+
+            // عرض النتيجة الوصفية والترجمة
+
+            const resultElement = document.getElementById(`q-result-${questionId}`);
+
+            resultElement.innerHTML = resultHtml + translationHtml;
+
+            // تحديث النتيجة الإجمالية
+
+            updateTotalScoreDisplay();
+
+            // تعطيل زر التحقق
+
+            checkBtn.disabled = true;
+
+            checkBtn.classList.remove('bg-indigo-500', 'hover:bg-indigo-600', 'check-button');
+
+            checkBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+
+        }
+
+        // ----------------------------------------------------------------------
+
+        // 3. تحديث عرض النتيجة الإجمالية
+
+        // ----------------------------------------------------------------------
+
+        function updateTotalScoreDisplay() {
+
+            document.getElementById('total-score').textContent = currentScore.toFixed(2);
+
+        }
+
+        // ----------------------------------------------------------------------
+
+        // 4. بناء هيكل الأسئلة في HTML
+
+        // ----------------------------------------------------------------------
+
+        function renderQuiz() {
+
+            const container = document.getElementById('quiz-container');
+
+            container.innerHTML = ''; // تفريغ الحاوية
+
+            quizData.forEach(q => {
+
+                const questionElement = document.createElement('div');
+
+                questionElement.className = 'bg-white p-6 rounded-xl shadow-md transition-all duration-300 ease-in-out border border-gray-300';
+
+                questionElement.id = `q-card-${q.id}`;
+
+                // السؤال (اتجاه النص من اليسار لليمين)
+
+                let html = `
+
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4" dir="ltr" style="text-align: left;">${q.id}. ${q.question}</h2>
+
+                    <form id="q-form-${q.id}" class="space-y-3 mb-6">
+
+                `;
+
+                // الخيارات (تظهر من اليسار لليمين)
+
+                q.options.forEach((option, index) => {
+
+                    const optionId = `q${q.id}-opt${index}`;
+
+                    html += `
+
+                        <label for="${optionId}" class="option-label block p-3 rounded-lg flex items-center bg-white shadow-sm" dir="ltr">
+
+                            <input type="checkbox" id="${optionId}" name="q${q.id}" value="${option}" class="option-input">
+
+                            <span class="checked-indicator"></span>
+
+                            <span class="flex-grow">${option}</span>
+
+                        </label>
+
+                    `;
+
+                });
+
+                // زر التحقق والنتيجة
+
+                html += `
+
+                    </form>
+
+                    <div id="q-result-${q.id}" class="my-4"></div>
+
+                    <button id="check-btn-${q.id}" onclick="checkAnswer(${q.id})"
+
+                        class="check-button w-full bg-indigo-500 text-white font-bold py-3 rounded-xl hover:bg-indigo-600 transition duration-150">
+
+                        تحقق من الإجابة (درجتان)
+
+                    </button>
+
+                `;
+
+                questionElement.innerHTML = html;
+
+                container.appendChild(questionElement);
+
+            });
+
+        }
+
+        // 5. ربط وظيفة تلوين الـ Checkbox المخصص (للانتقال من التنسيق العادي إلى تنسيق التحديد)
+
+        function attachCheckboxStyling() {
+
+            document.querySelectorAll('.option-input').forEach(input => {
+
+                input.addEventListener('change', function() {
+
+                    const label = this.closest('label');
+
+                    // هذا التلوين هو للتأثير التفاعلي قبل التحقق فقط
+
+                    if (!answeredQuestions[input.name.substring(1)]) {
+
+                        if (this.checked) {
+
+                            label.classList.add('border-indigo-500');
+
+                        } else {
+
+                            label.classList.remove('border-indigo-500');
+
+                        }
+
+                    }
+
+                });
+
+            });
+
+        }
+
+        // 6. تشغيل التطبيق
+
+        window.onload = () => {
+
+            renderQuiz();
+
+            attachCheckboxStyling();
+
+            updateTotalScoreDisplay();
+
+        };
+
+    </script>
+
+</body>
+
+</html>
+

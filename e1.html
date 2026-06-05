@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+
+<html lang="en" dir="ltr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>English True/False Quiz</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+
+        /* خط "Inter" لجميع النصوص */
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
+        body {
+
+            font-family: 'Inter', sans-serif;
+
+            background-color: #f7f7f7;
+
+        }
+
+        /* تنسيقات الألوان الفورية */
+
+        .correct-answer {
+
+            background-color: #d1fae5; /* أخضر فاتح للخلفية */
+
+            border-color: #10b981; /* أخضر للإطار */
+
+        }
+
+        .wrong-answer {
+
+            background-color: #fee2e2; /* أحمر فاتح للخلفية */
+
+            border-color: #ef4444; /* أحمر للإطار */
+
+        }
+
+        .question-card {
+
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+
+        }
+
+        /* التعديل هنا: فئة مخصصة للترجمة تكون RTL */
+
+        .rtl-hint {
+
+            direction: rtl; /* جعل النص داخل هذا العنصر يبدأ من اليمين */
+
+            border-right: 4px solid #60a5fa; /* الخط الجانبي يكون على اليمين */
+
+            padding-right: 0.75rem; /* مسافة داخلية من اليمين */
+
+        }
+
+    </style>
+
+</head>
+
+<body class="p-4 sm:p-8">
+
+    <div class="max-w-4xl mx-auto mb-6">
+
+        <a href="https://codepen.io/Alialhaddi/full/ByKmaae" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150"
+           target="_blank">
+          
+
+            <svg class="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+
+            </svg>
+
+            العودة للصفحة الرئيسية
+
+        </a>
+
+    </div>
+
+    <header class="sticky top-0 z-10 bg-white p-4 shadow-lg rounded-xl mb-6">
+
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+
+            <h1 class="text-2xl font-extrabold text-indigo-700">اختبار الإنجليزية</h1>
+
+            <div class="text-lg font-semibold bg-indigo-100 text-indigo-800 px-4 py-2 rounded-full shadow-inner">
+
+                النتيجة : <span id="total-score">0</span> / 148
+
+            </div>
+
+        </div>
+
+    </header>
+
+    <main class="max-w-4xl mx-auto space-y-6 pb-20">
+
+        <h2 class="text-xl font-bold text-gray-700 mt-4 mb-4">اختر (صح) أو (خطأ) لكل عبارة:</h2>
+
+        <div id="questions-container" class="space-y-6"></div>
+
+    </main>
+
+    <script>
+
+        // مصفوفة الأسئلة مع الإجابات الصحيحة والنقاط
+
+        const questions = [
+
+            { id: 1, question: "The opposites of the words \"happy-legal\" are \"sad-illegal\".", correctAnswer: "TRUE", score: 2, hint: "أضداد كلمتي \"happy\" (سعيد) و \"legal\" (قانوني) هي \"sad\" (حزين) و \"illegal\" (غير قانوني)." },
+
+            { id: 2, question: "The noun of the verb \"describe\" is \"description\".", correctAnswer: "TRUE", score: 2, hint: "الاسم من الفعل \"describe\" (يصف) هو \"description\" (وصف)." },
+
+            { id: 3, question: "\"I realize what Ali wants to say\", the word \"realize\" means \"understand\".", correctAnswer: "TRUE", score: 2, hint: "في جملة: \"I realize what Ali wants to say\"، تعني كلمة \"realize\" (يدرك) \"understand\" (يفهم)." },
+
+            { id: 4, question: "The opposite of \"expensive\" is \"high\".", correctAnswer: "FALSE", score: 2, hint: "ضد كلمة \"expensive\" (غالٍ) هو \"high\" (مرتفع)." },
+
+            { id: 5, question: "Tourism in Yemen becomes very powerful in the field of culture.", correctAnswer: "TRUE", score: 2, hint: "أصبحت السياحة في اليمن قوية جدًا في مجال الثقافة." },
+
+            { id: 6, question: "The prefix of the word \"hurry\" is \"hurries\".", correctAnswer: "FALSE", score: 2, hint: "البادئة (prefix) لكلمة \"hurry\" (يُسرع) هي \"hurries\"." },
+
+            { id: 7, question: "The meaning of \"deal with\" in Arabic is \"يتعامل مع\".", correctAnswer: "TRUE", score: 2, hint: "معنى \"deal with\" في اللغة العربية هو \"يتعامل مع\"." },
+
+            { id: 8, question: "how many rice do you want", correctAnswer: "FALSE", score: 2, hint: "كمية الأرز التي تريدها (كم أرز تريد)" },
+
+            { id: 9, question: "the meaning of (establish) is found", correctAnswer: "TRUE", score: 2, hint: "معنى (establish) (يُنشئ/يُقيم) هو \"found\" (يجد)." },
+
+            { id: 10, question: "the word expensive means رخيص (cheap)", correctAnswer: "FALSE", score: 2, hint: "كلمة \"expensive\" (غالٍ) تعني \"رخيص\"." },
+
+            { id: 11, question: "to greet someone is to say good bye", correctAnswer: "FALSE", score: 2, hint: "أن تُحيي شخصًا (greet) يعني أن تقول له وداعًا (good bye)." },
+
+            { id: 12, question: "The suffix of the word \"carry\" is \"carrying\".", correctAnswer: "TRUE", score: 2, hint: "اللاحقة (suffix) لكلمة \"carry\" (يحمل) هي \"carrying\"." },
+
+            { id: 13, question: "The same meaning of the phrasal verb (get away) is escape.", correctAnswer: "TRUE", score: 2, hint: "نفس معنى الفعل المركب (get away) هو \"escape\" (يهرب)." },
+
+            { id: 14, question: "I watch TV every light.", correctAnswer: "FALSE", score: 2, hint: "أنا أشاهد التلفزيون كل ضوء." },
+
+            { id: 15, question: "many is used with the noun (water).", correctAnswer: "FALSE", score: 2, hint: "تُستخدم \"many\" (العديد) مع الاسم (water) (الماء)." },
+
+            { id: 16, question: "The car is an electronic machine.", correctAnswer: "TRUE", score: 2, hint: "السيارة هي آلة إلكترونية." },
+
+            { id: 17, question: "The passive form of the verb \"give\" is \"given\".", correctAnswer: "TRUE", score: 2, hint: "صيغة التصريف الثالث (Passive form) للفعل \"give\" (يُعطي) هي \"given\"." },
+
+            { id: 18, question: "The meaning of \"communication\" is وسائل اتصال.", correctAnswer: "TRUE", score: 2, hint: "معنى \"communication\" (اتصال) هو وسائل اتصال." },
+
+            { id: 19, question: "The meaning of the word \"reply\" is \"ask\".", correctAnswer: "FALSE", score: 2, hint: "معنى كلمة \"reply\" (يرد) هو \"ask\" (يسأل)." },
+
+            { id: 20, question: "The opposite of \"cold\" is \"hot\".", correctAnswer: "TRUE", score: 2, hint: "ضد كلمة \"cold\" (بارد) هو \"hot\" (ساخن)." },
+
+            { id: 21, question: "The past tense of the verb \"use\" is \"used\".", correctAnswer: "TRUE", score: 2, hint: "زمن الماضي للفعل \"use\" (يستخدم) هو \"used\"." },
+
+            { id: 22, question: "Stay away means \"not go near\".", correctAnswer: "TRUE", score: 2, hint: "\"Stay away\" (ابقى بعيداً) تعني \"not go near\" (لا تقترب)." },
+
+            { id: 23, question: "The opposite meaning of the word \"latter\" is \"former\".", correctAnswer: "TRUE", score: 2, hint: "ضد كلمة \"latter\" (الأخير) هو \"former\" (السابق)." },
+
+            { id: 24, question: "A plane is faster than a car.", correctAnswer: "TRUE", score: 2, hint: "الطائرة أسرع من السيارة." },
+
+            { id: 25, question: "The suffix of the word \"pay\" is \"paying\".", correctAnswer: "TRUE", score: 2, hint: "اللاحقة (suffix) لكلمة \"pay\" (يدفع) هي \"paying\"." },
+
+            { id: 26, question: "The opposite of \"big\" is \"great\".", correctAnswer: "FALSE", score: 2, hint: "ضد كلمة \"big\" (كبير) هو \"great\" (عظيم)." },
+
+            { id: 27, question: "He do his homework.", correctAnswer: "FALSE", score: 2, hint: "الجملة \"He do his homework\" صحيحة." },
+
+            { id: 28, question: "The opposite of \"send\" is \"reply\".", correctAnswer: "FALSE", score: 2, hint: "ضد كلمة \"send\" (يُرسل) هو \"reply\" (يرد)." },
+
+            { id: 29, question: "The meaning of \"travel agents\" is عملاء السفر.", correctAnswer: "FALSE", score: 2, hint: "معنى \"travel agents\" (وكلاء السفر) هو عملاء السفر." },
+
+            { id: 30, question: "Look, there is a boy \"eat\" behind the door. is correct.", correctAnswer: "FALSE", score: 2, hint: "الجملة \"Look, there is a boy \"eat\" behind the door\" صحيحة." },
+
+            { id: 31, question: "The exact meaning of the word \"several\" is \"a trip\".", correctAnswer: "FALSE", score: 2, hint: "المعنى الدقيق لكلمة \"several\" (العديد) هو \"a trip\" (رحلة)." },
+
+            { id: 32, question: "The word \"much\" is used before uncountable nouns.", correctAnswer: "TRUE", score: 2, hint: "تُستخدم كلمة \"much\" (الكثير) قبل الأسماء غير المعدودة." },
+
+            { id: 33, question: "The meaning of \"get on\" is \"continue\".", correctAnswer: "TRUE", score: 2, hint: "معنى \"get on\" (يصعد/يتقدم) هو \"continue\" (يستمر)." },
+
+            { id: 34, question: "The meaning of \"capacity\" in English is \"ability to do\".", correctAnswer: "TRUE", score: 2, hint: "معنى \"capacity\" (قدرة استيعابية) في الإنجليزية هو \"ability to do\" (القدرة على القيام بشيء)." },
+
+            { id: 35, question: "The suffix of the word \"happy\" is \"happying\".", correctAnswer: "FALSE", score: 2, hint: "اللاحقة (suffix) لكلمة \"happy\" (سعيد) هي \"happying\"." },
+
+            { id: 36, question: "Early is the opposite meaning of \"full\".", correctAnswer: "FALSE", score: 2, hint: "\"Early\" (مبكر) هو المعنى المضاد لكلمة \"full\" (ممتلئ)." },
+
+            { id: 37, question: "The superlative adjective of the adjective \"strong\" is \"strongest\".", correctAnswer: "TRUE", score: 2, hint: "صيغة التفضيل العليا (superlative) لصفة \"strong\" (قوي) هي \"strongest\" (الأقوى)." },
+
+            { id: 38, question: "The meaning of the word \"actual\" is \"real\".", correctAnswer: "TRUE", score: 2, hint: "معنى كلمة \"actual\" (فعلي) هو \"real\" (حقيقي)." },
+
+            { id: 39, question: "Yemen has nice places.", correctAnswer: "TRUE", score: 2, hint: "اليمن لديها أماكن جميلة." },
+
+            { id: 40, question: "The relative pronoun \"who\" is used for things.", correctAnswer: "FALSE", score: 2, hint: "الضمير الموصول \"who\" (الذي/التي) يُستخدم للأشياء." },
+
+            { id: 41, question: "You must shut these doors is a correct sentence.", correctAnswer: "TRUE", score: 2, hint: "جملة \"You must shut these doors\" صحيحة." },
+
+            { id: 42, question: "The meaning of \"city center\" is مركز المدينة.", correctAnswer: "TRUE", score: 2, hint: "معنى \"city center\" هو مركز المدينة." },
+
+            { id: 43, question: "(The bed is kept) is in active form.", correctAnswer: "FALSE", score: 2, hint: "جملة \"(The bed is kept)\" في صيغة المبني للمعلوم (active form)." },
+
+            { id: 44, question: "The meaning of \"calculations\" in Arabic is محاسبة (accounting).", correctAnswer: "FALSE", score: 2, hint: "معنى \"calculations\" (حسابات) في العربية هو \"محاسبة\"." },
+
+            { id: 45, question: "The structure of this statement is correct: \"I saw Ali while he was walking to the bus station\".", correctAnswer: "TRUE", score: 2, hint: "تركيب هذه الجملة صحيح: \"I saw Ali while he was walking to the bus station\"." },
+
+            { id: 46, question: "The adverb of the word \"lone\" is \"lonely\".", correctAnswer: "FALSE", score: 2, hint: "ظرف (adverb) كلمة \"lone\" (وحيد) هو \"lonely\"." },
+
+            { id: 47, question: "Smocking is not an addiction.", correctAnswer: "TRUE", score: 2, hint: "لحياكة (Smocking) ليس إدمانًا." },
+
+            { id: 48, question: "smoking is not an addiction.", correctAnswer: "FALSE", score: 2, hint: "التدخين (smoking) ليس إدمانًا." },
+
+            { id: 49, question: "The meaning of (approve) is not to say good.", correctAnswer: "FALSE", score: 2, hint: "معنى (approve) (يوافق) ليس \"أن تقول جيدًا\"." },
+
+            { id: 50, question: "The plural form of the noun 'man' is 'mans'.", correctAnswer: "FALSE", score: 2, hint: "صيغة الجمع للاسم 'man' (رجل) هي 'mans'." },
+
+            { id: 51, question: "The prefix of the word 'formal' is 'unformal'.", correctAnswer: "FALSE", score: 2, hint: "البادئة (prefix) لكلمة 'formal' (رسمي) هي 'unformal'." },
+
+            { id: 52, question: "The past form of the verb 'catch' is 'catched'.", correctAnswer: "FALSE", score: 2, hint: "صيغة الماضي للفعل 'catch' (يمسك) هي 'catched'." },
+
+            { id: 53, question: "The spelling of the word معلومات is inform.", correctAnswer: "FALSE", score: 2, hint: "تهجئة كلمة معلومات هي \"inform\" (يُعلم)." },
+
+            { id: 54, question: "The opposite of (strong) is powerful.", correctAnswer: "FALSE", score: 2, hint: "ضد (strong) (قوي) هو \"powerful\" (قوي/ذو نفوذ)." },
+
+            { id: 55, question: "I don't like a lot of salt on my food, (I add a few salt to it) is correct statement.", correctAnswer: "FALSE", score: 2, hint: "الجملة \"I don't like a lot of salt on my food, (I add a few salt to it)\" صحيحة." },
+
+            { id: 56, question: "the meaning of (motionless) is still.", correctAnswer: "TRUE", score: 2, hint: "معنى (motionless) (ساكن/بلا حركة) هو \"still\" (ساكن/هادئ)." },
+
+            { id: 57, question: "(By tomorrow, you will have been here for 3 weeks) is having correct future perfect tense.", correctAnswer: "TRUE", score: 2, hint: "جملة \"(By tomorrow, you will have been here for 3 weeks)\" تستخدم زمن المستقبل التام المستمر (future perfect tense) بشكل صحيح." },
+
+            { id: 58, question: "the opposite of a live is ugly.", correctAnswer: "FALSE", score: 2, hint: "ضد كلمة \"live\" (حي/يعيش) هو \"ugly\" (قبيح)." },
+
+            { id: 59, question: "Alexander Graham bell invented mobile in 1876.", correctAnswer: "FALSE", score: 2, hint: "ألكسندر غراهام بيل اخترع الهاتف المحمول (mobile) في عام 1876." },
+
+            { id: 60, question: "Alexander Graham bell invention phone in 1876.", correctAnswer: "FALSE", score: 2, hint: "اختراع ألكسندر غراهام بيل للهاتف (phone) في عام 1876." },
+
+            { id: 61, question: "Alexander Graham bell invented telephone in 1876.", correctAnswer: "TRUE", score: 2, hint: "ألكسندر غراهام بيل اخترع الهاتف (telephone) في عام 1876." },
+
+            { id: 62, question: "tobacco smoke contains useful substances such as carbon, monoxide, tar and nicotine.", correctAnswer: "FALSE", score: 2, hint: "دخان التبغ يحتوي على مواد مفيدة مثل الكربون، أول أكسيد الكربون، القطران، النيكوتين." },
+
+            { id: 63, question: "the past form of the verb (be) is was / where.", correctAnswer: "TRUE", score: 2, hint: "صيغة الماضي للفعل (be) (يكون) هي was / where." },
+
+            { id: 64, question: "the translating of (ما اسمك) هو what is yours.", correctAnswer: "FALSE", score: 2, hint: "ترجمة عبارة (ما اسمك) هي \"what is yours\"." },
+
+            { id: 65, question: "the adjective of the word courage is couraging.", correctAnswer: "FALSE", score: 2, hint: "صفة (adjective) كلمة \"courage\" (شجاعة) هي \"couraging\"." },
+
+            { id: 66, question: "the meaning of minicomputer is كمبيوتر كبير نسبياً (a relatively big computer).", correctAnswer: "FALSE", score: 2, hint: "معنى \"minicomputer\" هو كمبيوتر كبير نسبياً." },
+
+            { id: 67, question: "The meaning of minicomputer is كمبيوتر صغير نسبياً (a relatively small computer).", correctAnswer: "TRUE", score: 2, hint: "معنى \"minicomputer\" هو كمبيوتر صغير نسبياً." },
+
+            { id: 68, question: "the meaning of manage is to run.", correctAnswer: "FALSE", score: 2, hint: "معنى \"manage\" (يُدير) هو \"to run\" (يركض)." },
+
+            { id: 69, question: "sentence (my parents usually go shopping on Friday) it's correct.", correctAnswer: "TRUE", score: 2, hint: "جملة \"(my parents usually go shopping on Friday)\" صحيحة." },
+
+            { id: 70, question: "mobile phone are becoming very powerful in the field of that communication.", correctAnswer: "TRUE", score: 2, hint: "أصبح الهاتف المحمول قويًا جدًا في مجال الاتصالات." },
+
+            { id: 71, question: "The plural of home is homes.", correctAnswer: "TRUE", score: 2, hint: "جمع كلمة \"home\" (منزل) هو \"homes\"." },
+
+            { id: 72, question: "(My brother goes to Qatar last week) is correct sentence.", correctAnswer: "FALSE", score: 2, hint: "جملة \"(My brother goes to Qatar last week)\" صحيحة." },
+
+            { id: 73, question: "People can achieve perfection in their moral life by following the prophets.", correctAnswer: "TRUE", score: 2, hint: "يمكن للناس تحقيق الكمال في حياتهم الأخلاقية باتباع الأنبياء." },
+
+            { id: 74, question: "Pollution means things that make things dirty.", correctAnswer: "TRUE", score: 2, hint: "التلوث (Pollution) يعني أشياء تجعل الأشياء قذرة." }
+
+        ];
+
+        // حالة التطبيق
+
+        const userAnswers = {}; // لتخزين إجابات المستخدم
+
+        let totalScore = 0;
+
+        const maxScore = questions.length * 2; // 74 سؤال * 2 نقطة
+
+        // دالة تحديث النتيجة الإجمالية في الواجهة
+
+        function updateTotalScoreDisplay() {
+
+            document.getElementById('total-score').textContent = `${totalScore}`;
+
+        }
+
+        // دالة التحقق من الإجابة وتحديث الواجهة والنقاط
+
+        function checkAnswer(questionId, selectedAnswer) {
+
+            const question = questions.find(q => q.id === questionId);
+
+            if (!question) return;
+
+            const isCorrect = selectedAnswer.toUpperCase() === question.correctAnswer.toUpperCase();
+
+            // تحقق إذا كان المستخدم قد أجاب مسبقًا
+
+            const previousAnswer = userAnswers[questionId];
+
+            // تحديث النتيجة الإجمالية
+
+            if (previousAnswer === undefined) {
+
+                // إذا كانت الإجابة الأولى صحيحة، أضف النقاط
+
+                if (isCorrect) {
+
+                    totalScore += question.score;
+
+                }
+
+            } else if (previousAnswer.isCorrect !== isCorrect) {
+
+                // إذا غير إجابته وكانت الإجابة الجديدة صحيحة، أضف النقاط (أو العكس)
+
+                if (isCorrect) {
+
+                    totalScore += question.score; // أضف النقاط
+
+                } else {
+
+                    totalScore -= question.score; // اطرح النقاط
+
+                }
+
+            }
+
+            // تخزين الإجابة الجديدة
+
+            userAnswers[questionId] = { selectedAnswer, isCorrect };
+
+            // تحديث عرض النتيجة
+
+            updateTotalScoreDisplay();
+
+            // إظهار الترجمة وتحديث تلوين الزر
+
+            const questionContainer = document.getElementById(`q-${questionId}`);
+
+            // 1. إظهار الترجمة (hint)
+
+            const hintElement = questionContainer.querySelector('.question-hint');
+
+            if (hintElement) {
+
+                hintElement.classList.remove('hidden'); // إزالة فئة الإخفاء
+
+            }
+
+            // 2. تحديث تلوين زر الإجابة
+
+            // إزالة الألوان السابقة من جميع الأزرار لنفس السؤال
+
+            const buttons = questionContainer.querySelectorAll('button');
+
+            buttons.forEach(btn => {
+
+                btn.classList.remove('correct-answer', 'wrong-answer', 'bg-green-100', 'bg-red-100', 'border-green-500', 'border-red-500', 'ring-2', 'ring-offset-2', 'ring-opacity-50', 'bg-green-50', 'border-green-300'); // إزالة كل الألوان
+
+                btn.classList.add('bg-gray-100', 'hover:bg-gray-200', 'border-gray-300');
+
+            });
+
+            // تلوين الزر المختار
+
+            const selectedButton = questionContainer.querySelector(`button[data-answer="${selectedAnswer}"]`);
+
+            if (selectedButton) {
+
+                selectedButton.classList.remove('bg-gray-100', 'hover:bg-gray-200', 'border-gray-300');
+
+                selectedButton.classList.add('ring-2', 'ring-offset-2', 'ring-opacity-50');
+
+                if (isCorrect) {
+
+                    // إجابة صحيحة (أخضر)
+
+                    selectedButton.classList.add('correct-answer', 'border-green-500', 'ring-green-300');
+
+                } else {
+
+                    // إجابة خاطئة (أحمر)
+
+                    selectedButton.classList.add('wrong-answer', 'border-red-500', 'ring-red-300');
+
+                    // تلوين الإجابة الصحيحة باللون الأخضر الخفيف للإشارة
+
+                    const correctButton = questionContainer.querySelector(`button[data-answer="${question.correctAnswer}"]`);
+
+                    if (correctButton) {
+
+                        correctButton.classList.remove('bg-gray-100', 'hover:bg-gray-200', 'border-gray-300');
+
+                        correctButton.classList.add('bg-green-50', 'border-green-300');
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        // دالة إنشاء واجهة السؤال
+
+        function createQuestionElement(question) {
+
+            const card = document.createElement('div');
+
+            card.id = `q-${question.id}`;
+
+            card.className = 'question-card bg-white p-5 sm:p-6 rounded-xl border border-gray-200 shadow-md';
+
+            // عنوان السؤال
+
+            const title = document.createElement('p');
+
+            title.className = 'text-gray-900 font-semibold mb-3 text-lg leading-relaxed';
+
+            // استخدام mr-2 لرقم السؤال في LTR
+
+            title.innerHTML = `<span class="text-sm font-bold text-indigo-600 mr-2">${question.id}.</span> ${question.question}`;
+
+            card.appendChild(title);
+
+            // الترجمة (تلميح) - الآن تظهر بعد الإجابة
+
+            const hint = document.createElement('p');
+
+            // استخدام فئة 'rtl-hint' الجديدة لتطبيق RTL و الحدود على اليمين
+
+            hint.className = 'question-hint hidden text-gray-500 text-sm mb-4 rtl-hint pt-2';
+
+            hint.textContent = `الترجمة: ${question.hint}`;
+
+            card.appendChild(hint);
+
+            // حاوية الأزرار
+
+            const buttonContainer = document.createElement('div');
+
+            buttonContainer.className = 'flex flex-col sm:flex-row gap-3 mt-4';
+
+            ['TRUE', 'FALSE'].forEach(answer => {
+
+                const button = document.createElement('button');
+
+                button.textContent = answer === 'TRUE' ? 'صحيح (True)' : 'خطأ (False)';
+
+                button.setAttribute('data-answer', answer);
+
+                button.className = 'flex-1 py-3 px-4 rounded-lg font-medium border-2 transition duration-150 ease-in-out ' +
+
+                                   'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200 shadow-sm text-base focus:outline-none';
+
+                button.onclick = () => checkAnswer(question.id, answer);
+
+                buttonContainer.appendChild(button);
+
+            });
+
+            card.appendChild(buttonContainer);
+
+            return card;
+
+        }
+
+        // تهيئة التطبيق عند تحميل الصفحة
+
+        window.onload = function() {
+
+            const container = document.getElementById('questions-container');
+
+            // عرض الأسئلة
+
+            questions.forEach(q => {
+
+                container.appendChild(createQuestionElement(q));
+
+            });
+
+            // عرض النتيجة الأولية (0)
+
+            updateTotalScoreDisplay();
+
+        };
+
+    </script>
+
+</body>
+
+</html>
+

@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+
+<html lang="en" dir="ltr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>English Multiple Choice Quiz</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+
+        /* خط "Inter" للنصوص الإنجليزية */
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
+        /* خط "Cairo" للنصوص العربية في الترجمة */
+
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+
+        body {
+
+            font-family: 'Inter', sans-serif;
+
+            background-color: #f7f7f7;
+
+        }
+
+        /* تنسيقات الألوان الفورية */
+
+        .correct-answer {
+
+            background-color: #d1fae5; /* أخضر فاتح للخلفية */
+
+            border-color: #10b981; /* أخضر للإطار */
+
+            color: #065f46;
+
+        }
+
+        .wrong-answer {
+
+            background-color: #fee2e2; /* أحمر فاتح للخلفية */
+
+            border-color: #ef4444; /* أحمر للإطار */
+
+            color: #991b1b;
+
+        }
+
+        .correct-highlight {
+
+            /* تلوين الخيار الصحيح إذا كانت الإجابة المختارة خاطئة */
+
+            background-color: #ecfdf5;
+
+            border-color: #a7f3d0;
+
+            color: #065f46;
+
+        }
+
+        .question-card {
+
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+
+        }
+
+        /* فئة مخصصة للترجمة العربية (RTL) */
+
+        .rtl-hint {
+
+            direction: rtl; /* جعل النص داخل هذا العنصر يبدأ من اليمين */
+
+            font-family: 'Cairo', sans-serif; /* استخدام خط عربي */
+
+            border-right: 4px solid #3b82f6; /* الخط الجانبي يكون على اليمين */
+
+            padding-right: 0.75rem; /* مسافة داخلية من اليمين */
+
+            font-weight: 500;
+
+        }
+
+    </style>
+
+</head>
+
+<body class="p-4 sm:p-8">
+
+    <div class="max-w-4xl mx-auto mb-6">
+
+        <a href="https://codepen.io/Alialhaddi/full/ByKmaae" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150"
+           target="_blank">
+
+            <svg class="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+
+            </svg>
+
+            العودة للصفحة الرئيسية
+
+        </a>
+
+    </div>
+
+    <header class="sticky top-0 z-10 bg-white p-4 shadow-lg rounded-xl mb-6">
+
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+
+            <h1 class="text-2xl font-extrabold text-indigo-700">اختبار اللغة الإنجليزية</h1>
+
+            <div class="text-lg font-semibold bg-indigo-100 text-indigo-800 px-4 py-2 rounded-full shadow-inner">
+
+                النتيجة: <span id="total-score">0</span> / 134
+
+            </div>
+
+        </div>
+
+    </header>
+
+    <main class="max-w-4xl mx-auto space-y-6 pb-20">
+
+        <h2 class="text-xl font-bold text-gray-700 mt-4 mb-4">اختر الإجابة الصحيحة لكل سؤال (درجتان لكل سؤال):</h2>
+
+        <div id="questions-container" class="space-y-6"></div>
+
+    </main>
+
+    <script>
+
+        // مصفوفة الأسئلة المُعاد تنسيقها (67 سؤال)
+
+        const questions = [
+
+            { id: 1, question: "Travels have great effects on?", options: ["station", "robot", "brain", "memory"], correctAnswer: "memory", hint: "السفر لديه تأثير كبير على: محطة، ربوت (آلي)، الدماغ، الذاكرة" },
+
+            { id: 2, question: "I watch T.V every......", options: ["bright", "light", "night", "right"], correctAnswer: "night", hint: "أنا أشاهد التلفاز كل: ساطع، ضوء، ليلة، يمين" },
+
+            { id: 3, question: "The Yemeni government does everything to...... education", options: ["sells", "teaches", "develop", "study"], correctAnswer: "develop", hint: "الحكومة اليمنية تعمل كل شيء من أجل تطوير التعليم: بيع، تعليم، تطوير، دراسة" },
+
+            { id: 4, question: "They...... our school yesterday", options: ["to visit", "visiting", "visited", "visit"], correctAnswer: "visited", hint: "هم زاروا مدرستنا أمس: كي يزوروا، زيارة، زاروا، يزورون" },
+
+            { id: 5, question: "She asked me to...... her in the office", options: ["mate", "meeting", "meet", "meat"], correctAnswer: "meet", hint: "هي طلبت مني أن التقي بها في المكتب: رفيق، لقاء، أن التقي، لحم" },
+
+            { id: 6, question: "Ali...... his homework every day", options: ["do", "done", "does", "did"], correctAnswer: "does", hint: "علي يعمل واجباته المنزلية كل يوم: يعمل، عمل، يعمل، عمل" },
+
+            { id: 7, question: "Jiblah is the ...... city in Yemen", options: ["aid", "old", "oldest", "older"], correctAnswer: "oldest", hint: "جبلة هي الأقدم مدينة في اليمن: مساعدة، قديمة، الأقدم، أقدم" },
+
+            { id: 8, question: "It is also ...... than that of al-Nisaa", options: ["longing", "longest", "longer", "long"], correctAnswer: "longer", hint: "هي أيضاً أطول من سورة النساء: شوق، الأطول، أطول، طويل" },
+
+            { id: 9, question: "What ...... the word 'sociology' mean?", options: ["done", "do", "does", "did"], correctAnswer: "does", hint: "ما العامل المساعد الذي يأتي في الجملة What ... the word 'sociology' mean? : (done, do, does, did)" },
+
+            { id: 10, question: "Ali wants to ...... his English, so he practices as much as he can.", options: ["teach", "write", "improve", "test"], correctAnswer: "improve", hint: "علي يريد أن يطور اللغة الإنجليزية، لذا فهو يمارسها قدر استطاعته: تعليم، يكتب، يطور، اختبار" },
+
+            { id: 11, question: "Do you mind if I smoke ...... here?", options: ["a cigarette", "tents", "small farms", "gardens"], correctAnswer: "a cigarette", hint: "هل تمانع أن أدخن سيجارة هنا: سيجارة، خيام، مزارع صغيرة، حدائق" },
+
+            { id: 12, question: "I.......... sick yesterday. Today I am much better.", options: ["is", "were", "was", "am"], correctAnswer: "was", hint: "أنا كنت مريض بالأمس واليوم أنا أفضل بكثير: is، were، was، am" },
+
+            { id: 13, question: "The baby has ...... all this afternoon.", options: ["asleep", "sleeping", "slept", "sleep"], correctAnswer: "slept", hint: "الطفل كان نام طوال الظهيرة: نائم/نوم، نوم، نام، ينام" },
+
+            { id: 14, question: "He ...... the ball out of the window.", options: ["through", "threw", "nanoseconds", "microseconds"], correctAnswer: "threw", hint: "هو رمى الكرة خارج النافذة: خلالها، رمى، نانو ثانية، ميكروثانية" },
+
+            { id: 15, question: "Plastic pipes are ...... to a large water tank.", options: ["realized", "sniffed", "toppled", "connected"], correctAnswer: "connected", hint: "الأنانيب البلاستيكية متصلة بخزان مياه كبير: مدركة، شم، مقلوبة، متصلة" },
+
+            { id: 16, question: "Two students ...... two offices.", options: ["be", "had", "has", "have"], correctAnswer: "have", hint: "طالبان لديهما مكتبان: يكون، يستعمل للماضي، يستعمل مع he she it، لديهما (للجمع)" },
+
+            { id: 17, question: "He ...... homework every day.", options: ["do", "done", "does", "did"], correctAnswer: "does", hint: "هو يعمل واجبه المنزلي كل يوم: do، done، does، did" },
+
+            { id: 18, question: "Many tourists ........ Yemen.", options: ["vesting", "visitor", "visit", "visited"], correctAnswer: "visit", hint: "كثير من السياح يزورون اليمن: مستثمر، زائر، يزورون، زاروا" },
+
+            { id: 19, question: "We ........ not yet finished unit four.", options: ["finished", "finish", "have", "has"], correctAnswer: "have", hint: "نحن لم ننهِ بعد الوحدة الرابعة: انتهى، ينتهي، have، has" },
+
+            { id: 20, question: "The test tomorrow will have ten ....... words from other lessons.", options: ["more", "study", "write", "reduce"], correctAnswer: "more", hint: "سيحتوي الاختبار غداً على عشر كلمات إضافية من دروس أخرى: زيادة، دراسة، كتابة، تقليل" },
+
+            { id: 21, question: "We have......... in the previous lesson that studying has many advantages.", options: ["saw", "sea", "seen", "see"], correctAnswer: "seen", hint: "لقد رأينا في الدرس السابق أن الدراسة لها فوائد عديدة: رأينا في الماضي البسيط، البحر، رأينا (التصريف الثالث)، نرى" },
+
+            { id: 22, question: "Women of mount Sabir in Taiz...... famous for wearing brightly colored dresses with many gold ornaments.", options: ["were", "was", "are", "is"], correctAnswer: "are", hint: "نساء جبل صبر في تعز كن مشهورات بارتداء الملابس: كانوا، كان، يكونوا (للجمع)، تكون (للمفرد)" },
+
+            { id: 23, question: "Visitors to Yemen........ charmed by the various attractions in the country.", options: ["were", "was", "are", "is"], correctAnswer: "are", hint: "الزائرون إلى اليمن مفتونون بالمعالم السياحية المتنوعة: كانوا، كان، يكونون (للجمع)، يكون (للمفرد)" },
+
+            { id: 24, question: "The opposite meaning of the word 'light' is...", options: ["dark", "shout", "a small animal", "fly"], correctAnswer: "dark", hint: "المعنى المعاكس لكلمة \"نور\" هو ظلام: ظلام، صراخ، حيوان صغير، ذبابه" },
+
+            { id: 25, question: "He was born ...... 15th March.", options: ["at", "about", "in", "on"], correctAnswer: "on", hint: "ولد في 15 مارس: at، about، in، on" },
+
+            { id: 26, question: "I come to school by ......", options: ["bust", "buss", "bus", "boss"], correctAnswer: "bus", hint: "أنا آتي إلى المدرسة بواسطة باص: bust، buss، باص، مدير" },
+
+            { id: 27, question: "The value of the plane ..... in the speed.", options: ["least", "lied", "lies", "lie"], correctAnswer: "lies", hint: "قيمة الطائرة تكمن في السرعة: الأقل، كذب، تكمن، يكذب" },
+
+            { id: 28, question: "Parents ...... their children from danger", options: ["develop", "keep away", "give an education", "provide"], correctAnswer: "keep away", hint: "الآباء يحفظون بعيدا أبنائهم من الخطر: يطورون، يحفظون بعيدا، يقدمون التعليم، يوفرون" },
+
+            { id: 29, question: "Yemen is ...... for its historic cities", options: ["knows", "knowing", "known", "know"], correctAnswer: "known", hint: "اليمن معروف بمواقعها التاريخية: يعرف، المعرفة، معروف، يعرف" },
+
+            { id: 30, question: "The word 'information' means", options: ["knowledge or give data", "tasted", "smelled", "smoked"], correctAnswer: "knowledge or give data", hint: "كلمة \"معلومات\" تعني معرفة أو إعطاء بيانات: معرفة أو إعطاء بيانات، تذوق، شم، دخن" },
+
+            { id: 31, question: "Yemen .... a historical and cultural open museum with many spots to visit", options: ["continue", "constituting", "constitutes", "constitute"], correctAnswer: "constitutes", hint: "اليمن تشكل متحف تاريخي وثائقي مفتوح: تستمر، تشكيل، تشكل، تشكل" },
+
+            { id: 32, question: "They have not yet ........ Unit four", options: ["to finish", "finishing", "finished", "finish"], correctAnswer: "finished", hint: "لم ينتهوا بعد الوحدة الرابعة: لإنهاء، انتهاء، ينتهوا (التصريف الثالث)، ننتهي" },
+
+            { id: 33, question: "the test tomorrow will have 10 ...... extra words from other lessons", options: ["more", "less", "easy", "difficult"], correctAnswer: "more", hint: "سيحتوي الاختبار غداً على 10 كلمات أكثر من دروس أخرى: أكثر، أقل، سهلة، صعبة" },
+
+            { id: 34, question: "The car ...... an electronic machine", options: ["has", "was", "is", "are"], correctAnswer: "is", hint: "السيارة هي آلة إلكترونية: has، was، is، are" },
+
+            { id: 35, question: "You often watch TV ......?", options: ["should you", "didn't you", "don't you", "doesn't you"], correctAnswer: "don't you", hint: "أنت غالباً تشاهد التلفاز، أليس كذلك؟: should you، didn't you، don't you، doesn't you" },
+
+            { id: 36, question: "Telephone companies use computers to ......", options: ["Organize telephone calls", "Assist telephone operators in their work", "Make communications faster and easier", "(Have less employment people)"], correctAnswer: "Make communications faster and easier", hint: "شركات الاتصالات تستخدم أجهزة الحاسوب لأجل جعل التواصل سهل وسريع: تنظيم اتصالات الهاتف، مساعدة موظفي الهاتف، جعل التواصل سهل وسريع، يقللون الموظفين" },
+
+            { id: 37, question: "Yemen ...... pride is wearing Jambia as a sign of manhood and bravery", options: ["take", "took", "takes", "Taked"], correctAnswer: "takes", hint: "اليمن يأخذ فخره في ارتداء الجنبية: يأخذ، أخذ، يأخذ (بإضافة s)، Taked" },
+
+            { id: 38, question: "The boys were using...... own car", options: ["your", "their", "her", "his"], correctAnswer: "their", hint: "كان الأولاد يستخدمون سيارتهم الخاصة: سيارتك، سيارتهم، سيارتها، سيارته" },
+
+            { id: 39, question: "A teacher...... a great effect on education", options: ["was", "had", "have", "has"], correctAnswer: "has", hint: "المعلم لديه تأثير كبير على التعليم: was، had، have، has" },
+
+            { id: 40, question: "The similar meaning of the word 'relief' is", options: ["confirm", "belief", "free", "comfort"], correctAnswer: "comfort", hint: "المعنى المماثل لكلمة \"راحة\" هو راحة: تأكيد، إيمان، حر، راحة" },
+
+            { id: 41, question: "The phrasal verb 'look after' means", options: ["inquire", "try to find", "appear", "take care of"], correctAnswer: "take care of", hint: "الفعل المركب \"اعتنى\" يعني اعتنى ب: استفسر، حاول أن يجد، ظهر، اعتنى ب" },
+
+            { id: 42, question: "What was Sameer's ........ when you told him the happy news?", options: ["wise", "reaction", "knocked", "stood"], correctAnswer: "reaction", hint: "ماذا كان رد فعل سمير عندما أخبرته بالخبر السعيد؟: بشكل حكيم، رد فعل، طرق الباب، وقف" },
+
+            { id: 43, question: "The part that can do the actual work", options: ["not known yet", "the well work", "about the use of a fingertip", "the ability of worker"], correctAnswer: "about the use of a fingertip", hint: "الجزء الذي يمكنه القيام بالعمل الفعلي هو استخدام أطراف الأصابع: غير معروف حتى الآن، العمل الجيد، استخدام أطراف الأصابع، قدرة العامل" },
+
+            { id: 44, question: "The airhostess in airline offices is used to", options: ["control aero planes' flights", "order seats on planes", "record information about passengers", "arrange the activities of airline"], correctAnswer: "record information about passengers", hint: "تعمل المضيفة الجوية في مكاتب الخطوط الجوية على تسجيل معلومات الركاب: التحكم في رحلات الطائرات، حجز المقاعد، تسجيل معلومات الركاب، تنظيم أنشطة الخطوط" },
+
+            { id: 45, question: "Today banks ........", options: ["can do all of kinds exchanging money", "are used for business only", "are used for terrible purposes only", "are large and fast in transferring money"], correctAnswer: "can do all of kinds exchanging money", hint: "اليوم أصبحت البنوك يمكنها القيام بجميع أنواع تبادل الأموال: يمكنه القيام بجميع أنواع تبادل الأموال، تستخدم لأعمال تجارية فقط، تستخدم لأغراض رهيبة فقط، كبيرة وسريعة في تحويل الأموال" },
+
+            { id: 46, question: "Tobacco smoke ...... harmful substances such as carbon monoxide, tar and nicotine", options: ["contains", "contain", "contained", "containing"], correctAnswer: "contains", hint: "دخان التبغ يحتوي مواد ضارة: يحتوي على، contain، contained، containing" },
+
+            { id: 47, question: "The glass toppled ........ of the shelf and broke", options: ["stood", "fell", "above", "knocked"], correctAnswer: "fell", hint: "الزجاج سقط من على الرف وتحطم: وقف، سقط، فوق، طرق الباب" },
+
+            { id: 48, question: "A diamond is a gem", options: ["glass", "jewel", "quartz", "necklace"], correctAnswer: "jewel", hint: "الألماس هو جوهرة: زجاج، جوهرة، كوارتز، قلادة" },
+
+            { id: 49, question: "He was born ...... 14th march", options: ["on", "at", "in", "off"], correctAnswer: "on", hint: "ولد في الرابع عشر من شهر مارس: on، at، in، off" },
+
+            { id: 50, question: "The criminal tried to flee from the police officer", options: ["runaway", "fly", "a small animal", ""], correctAnswer: "runaway", hint: "حاول المجرم الهروب من ضابط الشرطة: هروب، ذبابه، حيوان صغير،" },
+
+            { id: 51, question: "Marib is ...... famous historical site in Yemen", options: ["the most", "more", "much", "so much"], correctAnswer: "the most", hint: "مأرب هي الأكثر شهرة كموقع تاريخي في اليمن: الأكثر، أكثر، كمية، تلك كثيراً" },
+
+            { id: 52, question: "Human beings can talk but animals cannot", options: ["people", "plants", "cats", "babies"], correctAnswer: "people", hint: "الإنسان يمكنه الكلام لكن الحيوانات لا يمكنه: الناس، النباتات، القطط، الأطفال" },
+
+            { id: 53, question: "The woman sniffed the air and knew something was burning", options: ["smoked", "listened to", "smelled", "tasted"], correctAnswer: "smelled", hint: "المرأة استنشقت الهواء وعرفت أن شيئًا يحترق: دخنت، سمعت، شمت، تذوقت" },
+
+            { id: 54, question: "Modern mobiles .... the capacity to conduct video conferencing online tutoring and learning.", options: ["have", "has", "had", "be"], correctAnswer: "have", hint: "الهواتف المحمولة الحديثة تملك القدرة على إجراء مؤتمرات الفيديو: have، has، had، be" },
+
+            { id: 55, question: "Yemen produces coffee, Japan produces cars, and Kuwait produces oil.", options: ["plans", "makes/takes out of ground", "grow", "builds"], correctAnswer: "makes/takes out of ground", hint: "اليمن تنتج القهوة، اليابان تصنع السيارات، والكويت تستخرج النفط: تخطط، تصنع/تستخرج من الأرض، تنمو، تبني" },
+
+            { id: 56, question: "Rasulid schools and mosques are the .... beautiful places in Yemen.", options: ["more than", "more", "most", "(much)"], correctAnswer: "most", hint: "المدارس الرسولية والمساجد هي الأكثر جمالاً في اليمن: أكثر من، زيادة، الأكثر، كمية" },
+
+            { id: 57, question: "The computer is the most important invention next to ....", options: ["farming", "writing", "glass", "Engine"], correctAnswer: "Engine", hint: "الكمبيوتر هو الاختراع الأكثر أهمية بعد المحرك: الزراعة، الكتابة، الزجاج، المحرك" },
+
+            { id: 58, question: "Computers will soon affect ....", options: ["The lives of everyone", "The population of developed countries", "People in large cities", "The western worlds"], correctAnswer: "The lives of everyone", hint: "الكمبيوتر قريباً سيؤثر على حياة الجميع: حياة الجميع، سكان الدول المتقدمة، سكان المدن الكبرى، العالم الغربي" },
+
+            { id: 59, question: "If I .... enough money, I would have gone with you.", options: ["have", "had", "has", "be"], correctAnswer: "had", hint: "لو كان لدي مال كاف، لكنت سأذهب معك: have، had، has، be" },
+
+            { id: 60, question: "a doctor can explain ....", options: ["what is wrong with the computer", "how calculations are done", "what is wrong with the patient", "why computers are accurate"], correctAnswer: "what is wrong with the patient", hint: "يمكن للطبيب أن يشرح ما المشكلة مع المريض: ما هو الخطأ مع الكمبيوتر، كيف تتم الحسابات، ما المشكلة مع المريض، لماذا أجهزة الكمبيوتر دقيقة" },
+
+            { id: 61, question: "many poor families live in huts outside third world cities.", options: ["small farms", "tents", "small badly built homes", "gardens"], correctAnswer: "small badly built homes", hint: "تعيش العديد من الأسر الفقيرة في أكواخ. الأكواخ تعني: مزارع صغيرة، خيام، منازل صغيرة مبنية بشكل سيئ، حدائق" },
+
+            { id: 62, question: "Last night I was doing my homework when it so .... to rain heavily.", options: ["begun", "began", "begin", "beginning"], correctAnswer: "began", hint: "كنت أقوم بواجباتي المدرسية ليلة أمس عندما بدأت تمطر بغزارة: التصريف الثالث، بدأت، ابدأ أو يبدأ، البداية" },
+
+            { id: 63, question: "I realize what Ali wants to say. realize means:", options: ["make real", "understand", "apologize", "claim"], correctAnswer: "understand", hint: "أنا أدرك ما يريد علي قوله. realize تعني: يجعله حقيقياً، يفهم، الاعتذار، المطالبة" },
+
+            { id: 64, question: "The phrasal verb 'look like' means ....", options: ["go for", "run away", "appear like", "make order"], correctAnswer: "appear like", hint: "الفعل المركب 'look like' (يبدو وكأنه) يعني الظهور وكأنه: الذهاب إلى، الهروب، الظهور وكأنه، إصدار أمر" },
+
+            { id: 65, question: "Ali wants to ...... his English, so he practices as much as he can.", options: ["teach", "write", "improve", "test"], correctAnswer: "improve", hint: "علي يريد أن يطور اللغة الإنجليزية لذا فهو يمارسها: يعلم، يكتب، يطور، اختبار" },
+
+            { id: 66, question: "I always ........ the shopping.", options: ["done", "did", "do", "does"], correctAnswer: "do", hint: "أنا دائماً أقوم بالتسوق: done، did، do، does" },
+
+            { id: 67, question: "Computers that stores informatin have", options: ["station", "robbed", "brain", "memory"], correctAnswer: "memory", hint: "اجهزة الكمبيوتر التي تخزن المعلومات لديها : ذاكرة،دماغ،مسروقة،محطة" }
+
+        ];
+
+        // حالة التطبيق
+
+        const userAnswers = {}; // لتخزين إجابات المستخدم
+
+        let totalScore = 0;
+
+        const scorePerQuestion = 2;
+
+        const maxScore = questions.length * scorePerQuestion; // 67 سؤال * 2 نقطة = 134
+
+        // دالة تحديث النتيجة الإجمالية في الواجهة
+
+        function updateTotalScoreDisplay() {
+
+            document.getElementById('total-score').textContent = `${totalScore}`;
+
+        }
+
+        // دالة التحقق من الإجابة وتحديث الواجهة والنقاط
+
+        function checkAnswer(questionId, selectedAnswer, button) {
+
+            const question = questions.find(q => q.id === questionId);
+
+            if (!question) return;
+
+            // 1. حساب النتيجة
+
+            const isCorrect = selectedAnswer === question.correctAnswer;
+
+            const previousAnswer = userAnswers[questionId];
+
+            // تحديث النتيجة الإجمالية
+
+            if (previousAnswer === undefined) {
+
+                if (isCorrect) {
+
+                    totalScore += scorePerQuestion;
+
+                }
+
+            } else if (previousAnswer.selectedAnswer !== selectedAnswer) {
+
+                // إذا غير إجابته
+
+                if (previousAnswer.isCorrect) {
+
+                    totalScore -= scorePerQuestion; // طرح النتيجة السابقة
+
+                }
+
+                if (isCorrect) {
+
+                    totalScore += scorePerQuestion; // إضافة النتيجة الجديدة
+
+                }
+
+            } else {
+
+                // أعاد اختيار نفس الإجابة، لا تغيير في النتيجة
+
+                return;
+
+            }
+
+            // تخزين الإجابة الجديدة
+
+            userAnswers[questionId] = { selectedAnswer, isCorrect };
+
+            // تحديث عرض النتيجة
+
+            updateTotalScoreDisplay();
+
+            // 2. تحديث تلوين زر الإجابة وإظهار الترجمة
+
+            const questionContainer = document.getElementById(`q-${questionId}`);
+
+            // إزالة الألوان السابقة من جميع الأزرار لنفس السؤال
+
+            const buttons = questionContainer.querySelectorAll('button');
+
+            buttons.forEach(btn => {
+
+                btn.classList.remove('correct-answer', 'wrong-answer', 'correct-highlight', 'ring-2', 'ring-offset-2', 'ring-opacity-50');
+
+                btn.classList.add('bg-gray-100', 'hover:bg-gray-200', 'border-gray-300');
+
+            });
+
+            // تلوين الزر المختار
+
+            button.classList.remove('bg-gray-100', 'hover:bg-gray-200', 'border-gray-300');
+
+            button.classList.add('ring-2', 'ring-offset-2', 'ring-opacity-50');
+
+            if (isCorrect) {
+
+                // إجابة صحيحة (أخضر)
+
+                button.classList.add('correct-answer', 'border-green-500', 'ring-green-300');
+
+            } else {
+
+                // إجابة خاطئة (أحمر)
+
+                button.classList.add('wrong-answer', 'border-red-500', 'ring-red-300');
+
+                // تلوين الإجابة الصحيحة (الأخضر الفاتح)
+
+                const correctButton = questionContainer.querySelector(`button[data-answer="${question.correctAnswer.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"]`);
+
+                if (correctButton) {
+
+                    correctButton.classList.remove('bg-gray-100', 'hover:bg-gray-200', 'border-gray-300');
+
+                    correctButton.classList.add('correct-highlight', 'border-green-300');
+
+                }
+
+            }
+
+            // إظهار الترجمة (hint)
+
+            const hintElement = questionContainer.querySelector('.question-hint');
+
+            if (hintElement) {
+
+                hintElement.classList.remove('hidden'); // إزالة فئة الإخفاء
+
+            }
+
+        }
+
+        // دالة إنشاء واجهة السؤال
+
+        function createQuestionElement(question) {
+
+            const card = document.createElement('div');
+
+            card.id = `q-${question.id}`;
+
+            card.className = 'question-card bg-white p-5 sm:p-6 rounded-xl border border-gray-200 shadow-md';
+
+            // عنوان السؤال
+
+            const title = document.createElement('p');
+
+            title.className = 'text-gray-900 font-semibold mb-3 text-lg leading-relaxed';
+
+            // استخدام mr-2 لرقم السؤال في LTR
+
+            title.innerHTML = `<span class="text-sm font-bold text-indigo-600 mr-2">${question.id}.</span> ${question.question}`;
+
+            card.appendChild(title);
+
+            // الترجمة (تلميح) - تظهر بعد الإجابة وتكون RTL
+
+            const hint = document.createElement('p');
+
+            hint.className = 'question-hint hidden text-gray-700 text-sm mt-4 rtl-hint pt-2';
+
+            hint.textContent = `الترجمة: ${question.hint}`;
+
+            card.appendChild(hint);
+
+            // حاوية الأزرار
+
+            const buttonContainer = document.createElement('div');
+
+            buttonContainer.className = 'grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4';
+
+            question.options.forEach(answer => {
+
+                if (answer) { // تأكد من أن الخيار ليس فارغًا (مثل Q50)
+
+                    const button = document.createElement('button');
+
+                    button.textContent = answer;
+
+                    button.setAttribute('data-answer', answer);
+
+                    button.className = 'py-3 px-4 rounded-lg font-medium border-2 transition duration-150 ease-in-out ' +
+
+                                       'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200 shadow-sm text-base text-left focus:outline-none';
+
+                    button.onclick = function() {
+
+                        checkAnswer(question.id, answer, this);
+
+                    };
+
+                    buttonContainer.appendChild(button);
+
+                }
+
+            });
+
+            card.appendChild(buttonContainer);
+
+            return card;
+
+        }
+
+        // تهيئة التطبيق عند تحميل الصفحة
+
+        window.onload = function() {
+
+            const container = document.getElementById('questions-container');
+
+            // عرض الأسئلة
+
+            questions.forEach(q => {
+
+                container.appendChild(createQuestionElement(q));
+
+            });
+
+            // عرض النتيجة الأولية (0)
+
+            updateTotalScoreDisplay();
+
+        };
+
+    </script>
+
+</body>
+
+</html>
+

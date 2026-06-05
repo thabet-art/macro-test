@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+
+<html lang="ar" dir="rtl">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>اختبار الترجمة الشامل</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+
+        /* Custom Styles for better Arabic readability and aesthetics */
+
+        body {
+
+            font-family: 'Inter', sans-serif;
+
+            background-color: #f8f9fa;
+
+        }
+
+        .container {
+
+            max-width: 1000px;
+
+            margin: 2rem auto;
+
+            background: #ffffff;
+
+            padding: 2rem;
+
+            border-radius: 0.75rem;
+
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+
+        }
+
+        h1 {
+
+            border-bottom: 3px solid #007bff;
+
+            padding-bottom: 0.5rem;
+
+        }
+
+        .question-card {
+
+            transition: all 0.3s ease;
+
+        }
+
+        .question-card:hover {
+
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+
+            transform: translateY(-2px);
+
+        }
+
+        textarea {
+
+            transition: border-color 0.3s;
+
+        }
+
+        textarea:focus {
+
+            border-color: #007bff;
+
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+
+        }
+
+        /* إضافة نمط خاص لتطبيق اتجاه LTR على النصوص الإنجليزية */
+
+        .text-en {
+
+            direction: ltr;
+
+            text-align: left;
+
+        }
+
+        /* إضافة نمط خاص لتطبيق اتجاه RTL على النصوص العربية */
+
+        .text-ar {
+
+            direction: rtl;
+
+            text-align: right;
+
+        }
+
+        .check-btn {
+
+            box-shadow: 0 4px 6px rgba(40, 167, 69, 0.3);
+
+            transition: background-color 0.3s, transform 0.1s;
+
+        }
+
+        .check-btn:hover {
+
+            transform: translateY(-1px);
+
+        }
+
+        .result {
+
+            font-weight: 700;
+
+        }
+
+        .solution {
+
+            border-right: 5px solid #17a2b8; /* Changed border for visibility */
+
+            background-color: #e6f7ff;
+
+            color: #014c62;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+  
+<div class="max-w-4xl mx-auto mb-6">
+    <a href="https://codepen.io/Alialhaddi/full/ByKmaae"
+       class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150"
+       target="_blank">
+        
+        <svg class="h-5 w-5 mr-2"
+             xmlns="http://www.w3.org/2000/svg"
+             fill="none"
+             viewBox="0 0 24 24"
+             stroke="currentColor">
+            <path stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        
+        العودة للصفحة الرئيسية
+    </a>
+</div>
+<div class="container">
+
+    <h1 class="text-4xl font-extrabold text-center text-blue-600 mb-8">
+
+        اختبار الترجمة الشامل
+
+    </h1>
+
+    <p class="text-center text-lg text-gray-700 mb-6">
+
+        الرجاء إدخال الترجمة لكل سؤال. درجة كل سؤال هي 5 درجات.
+
+    </p>
+
+    <p class="text-center text-red-500 font-bold mb-8">
+
+        (5 درجات للإجابة المطابقة، 2.5 درجة للإجابة الجزئية أو التي تحتوي على كلمات مفتاحية صحيحة).
+      
+(سيبك من الدرجة لانها تقديرية وركز على تعلم الترجمة)
+    </p>
+
+    
+
+    <div id="quiz-container">
+
+        </div>
+
+    <div id="final-score" class="p-6 mt-10 rounded-lg shadow-xl" style="display: none; background-color: #f0f8ff; border: 2px solid #007bff;">
+
+        <h2 class="text-2xl font-bold text-center text-blue-700 mb-4">النتيجة النهائية</h2>
+
+        <p class="text-3xl font-extrabold text-center text-red-600">
+
+            <span id="total-score-display">0</span> من <span id="max-score-display">0</span>
+
+        </p>
+
+        <p class="text-center text-gray-600 mt-2">بالتوفيق في المراجعة!</p>
+
+    </div>
+
+</div>
+
+<script>
+
+    const questions = [
+
+        // --- قسم الترجمة من الإنجليزية إلى العربية (27 سؤالاً) ---
+
+        { id: 1, text: "It's better to watch the program on the TV.", direction: "English to Arabic", correct_ar: ["من الافضل مشاهدة البرنامج على التلفزيون"], partial_ar: ["مشاهدة البرنامج", "التلفزيون", "افضل"] },
+
+        { id: 2, text: "You might try taking some exercise, like walking.", direction: "English to Arabic", correct_ar: ["يمكنك محاولة ممارسة بعض التمارين الرياضية مثل المشي"], partial_ar: ["ممارسة بعض التمارين", "المشي", "محاولة"] },
+
+        { id: 3, text: "I don't like football very much.", direction: "English to Arabic", correct_ar: ["انا لا احب كرة القدم كثيرا"], partial_ar: ["لا احب", "كرة القدم"] },
+
+        { id: 4, text: "Stop smoking, it's injurious to health.", direction: "English to Arabic", correct_ar: ["اقلع عن التدخين فهو مضر بالصحة"], partial_ar: ["اقلع عن التدخين", "مضر بالصحة"] },
+
+        { id: 5, text: "I'd prefer a glass of juice to tea", direction: "English to Arabic", correct_ar: ["افضل كوبا من العصير على الشاي"], partial_ar: ["افضل كوب عصير", "على الشاي", "العصير", "الشاي"] },
+
+        { id: 6, text: "There are three types of education in Yemen namely; elementary, secondary, and academy.", direction: "English to Arabic", correct_ar: ["هناك ثلاثة مراحل للتعليم في اليمن وهي الابتدائي والثانوي والاكاديمي"], partial_ar: ["ثلاثة مراحل للتعليم", "الابتدائي والثانوي والاكاديمي", "في اليمن"] },
+
+        { id: 7, text: "This country produces coffee more than it needs.", direction: "English to Arabic", correct_ar: ["هذا البلد ينتج القهوة اكثر مما يحتاج", "ينتج هذا البلد من القهوة اكثر مما يحتاج"], partial_ar: ["ينتج القهوة", "اكثر مما يحتاج", "هذا البلد"] },
+
+        { id: 8, text: "Yemen imports cotton, sugar, tea and milk", direction: "English to Arabic", correct_ar: ["اليمن تستورد القطن, السكر, الشاي والحليب"], partial_ar: ["اليمن تستورد", "القطن", "السكر", "الشاي", "الحليب"] },
+
+        { id: 9, text: "Yemen exports great quantities of fish to Jordan", direction: "English to Arabic", correct_ar: ["اليمن تصدر كميات كبيرة من الاسماك الى الاردن"], partial_ar: ["اليمن تصدر", "كميات كبيرة", "الاسماك الى الاردن"] },
+
+        { id: 10, text: "I avoid sitting in public gardens", direction: "English to Arabic", correct_ar: ["اتجنب الجلوس في الحدائق العامة"], partial_ar: ["اتجنب", "الجلوس", "الحدائق العامة"] },
+
+        { id: 11, text: "You should tell your parents the truth", direction: "English to Arabic", correct_ar: ["يجب عليك ان تقول الحقيقة لوالديك"], partial_ar: ["يجب ان تقول", "الحقيقة لوالديك"] },
+
+        { id: 12, text: "You should tell the truth", direction: "English to Arabic", correct_ar: ["يجب عليك ان تقول الحقيقه"], partial_ar: ["يجب ان تقول", "الحقيقة"] },
+
+        { id: 13, text: "After having my breakfast, I put on my coat and drive to my work.", direction: "English to Arabic", correct_ar: ["بعد تناول الافطار ارتدي معطفي واتوجه بسيارتي الى العمل"], partial_ar: ["بعد تناول الافطار", "ارتدي معطفي", "اتوجه بسيارتي الى العمل"] },
+
+        { id: 14, text: "Who is the author of this coursework?", direction: "English to Arabic", correct_ar: ["من هو مؤلف هذا المقرر الدراسي"], partial_ar: ["من هو مؤلف", "المقرر الدراسي"] },
+
+        { id: 15, text: "Who is the author of this book?", direction: "English to Arabic", correct_ar: ["من هو مؤلف هذا الكتاب؟"], partial_ar: ["من هو مؤلف", "هذا الكتاب"] },
+
+        { id: 16, text: "Can you use the computer well /adequately?", direction: "English to Arabic", correct_ar: ["هل تستطيع ان تستعمل الكمبيوتر جيدا؟"], partial_ar: ["تستطيع ان تستعمل", "الكمبيوتر جيدا"] },
+
+        { id: 17, text: "It was not easy for me to make a decision, so I consulted my members of my family.", direction: "English to Arabic", correct_ar: ["لم يكن من السهل اتخاذ القرار، لذلك استشرت بعض افراد من اسرتي."], partial_ar: ["لم يكن من السهل اتخاذ القرار", "استشرت", "افراد من اسرتي"] },
+
+        { id: 18, text: "English is an international language because it's the language of commerce computer and medicine", direction: "English to Arabic", correct_ar: ["اللغه الانجليزيه لغه عالميه لانها لغه التجاره والكمبيوتر والطب"], partial_ar: ["اللغة الانجليزية لغة عالمية", "لغة التجارة والكمبيوتر والطب"] },
+
+        { id: 19, text: "Sana'a has changed and developed from a small city to a large modern city", direction: "English to Arabic", correct_ar: ["لقد تغيرت صنعاء وتطورت من مدينه صغيره الى مدينه حديثه"], partial_ar: ["تغيرت صنعاء وتطورت", "من مدينة صغيرة", "الى مدينة حديثة"] },
+
+        { id: 20, text: "An international Islamic conference about the middle East issue is expected to be held in the near future.", direction: "English to Arabic", correct_ar: ["من المتوقع عقد مؤتمر سلام دولي في المستقبل القريب حول ازمه الشرق الاوسط"], partial_ar: ["من المتوقع عقد مؤتمر", "المستقبل القريب", "ازمة الشرق الاوسط"] },
+
+        { id: 21, text: "Do you believe that war between states might stop?", direction: "English to Arabic", correct_ar: ["هل تعتقد ان الحروب ستتوقف بين الدول؟"], partial_ar: ["هل تعتقد", "الحروب ستتوقف", "بين الدول"] },
+
+        { id: 22, text: "Fast driving causes many traffic accidents.", direction: "English to Arabic", correct_ar: ["ان القيادة السريعة تسبب كثيرا من حوادث المرور"], partial_ar: ["القيادة السريعة", "تسبب", "حوادث المرور"] },
+
+        { id: 23, text: "College students have to learn to work hard.", direction: "English to Arabic", correct_ar: ["يجب على طلاب الجامعات ان يتعلموا العمل الجاد"], partial_ar: ["طلاب الجامعات", "ان يتعلموا العمل الجاد"] },
+
+        { id: 24, text: "The word (robot) is used to describe a mechanical person that works according to order.", direction: "English to Arabic", correct_ar: ["تستخدم كلمه روبوت لوصف الانسان الآلي الذي يعمل حسب الأوامر التي يتلقاها"], partial_ar: ["تستخدم كلمة روبوت", "لوصف الانسان الآلي", "حسب الأوامر"] },
+
+        { id: 25, text: "Fasting is one of the five pillars of Islam.", direction: "English to Arabic", correct_ar: ["الصيام هو احد اركان الاسلام الخمسه"], partial_ar: ["الصيام", "اركان الاسلام الخمسة"] },
+
+        { id: 26, text: "The careless boy has denied losing his book.", direction: "English to Arabic", correct_ar: ["الولد المهمل انكر فقدان كتابه"], partial_ar: ["الولد المهمل", "انكر فقدان كتابه"] },
+
+        { id: 27, text: "Flowers will be growing in our neighbour's garden.", direction: "English to Arabic", correct_ar: ["ستنمو الزهور في حديقه جيراننا"], partial_ar: ["ستنمو الزهور", "حديقة جيراننا"] },
+
+        // --- قسم الترجمة من العربية إلى الإنجليزية (14 سؤالاً) ---
+
+        { id: 28, text: "ينتج هذا البلد من القهوه اكثر مما يحتاج", direction: "Arabic to English", correct_en: ["This country produces coffee more than it needs."], partial_en: ["This country produces coffee", "more than it needs", "coffee"] },
+
+        { id: 29, text: "يجب ان تقول الحقيقة لوالديك", direction: "Arabic to English", correct_en: ["You should tell your parents the truth."], partial_en: ["You should tell", "your parents", "the truth"] },
+
+        { id: 30, text: "يجب ان تقول الحقيقه", direction: "Arabic to English", correct_en: ["You have to tell the truth.", "You should tell the truth."], partial_en: ["You have to tell", "the truth"] },
+
+        { id: 31, text: "اللغه الانجليزيه لغه عالميه", direction: "Arabic to English", correct_en: ["English language is an international language."], partial_en: ["English language", "international language"] },
+
+        { id: 32, text: "اتجنب الجلوس في الحدائق العامه", direction: "Arabic to English", correct_en: ["I avoid sitting in the public gardens."], partial_en: ["I avoid sitting", "public gardens"] },
+
+        { id: 33, text: "ان تدرس تنجح", direction: "Arabic to English", correct_en: ["If you study well, you will succeed."], partial_en: ["If you study", "you will succeed"] },
+
+        { id: 34, text: "هل تعرف كيف تطبع", direction: "Arabic to English", correct_en: ["Do you know how to type on the computer?"], partial_en: ["Do you know how to type", "on the computer"] },
+
+        { id: 35, text: "سالني المدير لماذا لم تاتي الى المدرسة يوم امس", direction: "Arabic to English", correct_en: ["The headmaster asked me; why didn't you come to school yesterday."], partial_en: ["The headmaster asked me", "why didn't you come", "school yesterday"] },
+
+        { id: 36, text: "ربما يعمل احمد في المزرعه الان", direction: "Arabic to English", correct_en: ["Ahmad might be working on the farm now."], partial_en: ["Ahmad might be working", "on the farm now"] },
+
+        { id: 37, text: "اذا اكلت كثيرا فقد تمرض", direction: "Arabic to English", correct_en: ["If you eat too much, you might get sick."], partial_en: ["If you eat too much", "you might get sick"] },
+
+        { id: 38, text: "من يستطيع ان يتكلم الفرنسيه", direction: "Arabic to English", correct_en: ["Who can speak French?"], partial_en: ["Who can speak", "French"] },
+
+        { id: 39, text: "ان سامي يستمتع بقراءه القصص", direction: "Arabic to English", correct_en: ["Sammy enjoys reading stories."], partial_en: ["Sammy enjoys", "reading stories"] },
+
+        { id: 40, text: "عليك بشراء تذكره حالما تصل الى المحطه", direction: "Arabic to English", correct_en: ["You have to buy a ticket as soon as you arrive at the station."], partial_en: ["You have to buy a ticket", "as soon as you arrive", "at the station"] },
+
+        { id: 41, text: "من هو مؤلف هذا الكتاب", direction: "Arabic to English", correct_en: ["Who is the author of this book?"], partial_en: ["Who is the author", "this book"] }
+
+    ];
+
+    const quizContainer = document.getElementById('quiz-container');
+
+    const finalScoreDisplay = document.getElementById('total-score-display');
+
+    const maxScoreDisplay = document.getElementById('max-score-display');
+
+    const finalScoreSection = document.getElementById('final-score');
+
+    let totalScore = 0;
+
+    const maxScore = questions.length * 5;
+
+    maxScoreDisplay.textContent = maxScore;
+
+    // دالة إنشاء الأسئلة في الصفحة
+
+    function renderQuestions() {
+
+        questions.forEach(q => {
+
+            const isEnglishToArabic = q.direction === "English to Arabic";
+
+            const solutionText = isEnglishToArabic ? q.correct_ar.join(" / ") : q.correct_en.join(" / ");
+
+            // تحديد اتجاه النص الأصلي واتجاه حقل الإدخال
+
+            const questionClass = isEnglishToArabic ? 'text-en' : 'text-ar';
+
+            const textareaClass = isEnglishToArabic ? 'text-ar' : 'text-en'; // الإجابة بالعربية (RTL) أو الإنجليزية (LTR)
+
+            
+
+            const card = document.createElement('div');
+
+            card.className = 'question-card p-5 mb-4 rounded-lg bg-gray-100 border border-gray-300';
+
+            card.innerHTML = `
+
+                <h3 class="text-lg font-semibold text-gray-800 mb-3">
+
+                    [${isEnglishToArabic ? 'ترجمة من الإنجليزية إلى العربية' : 'ترجمة من العربية إلى الإنجليزية'}]
+
+                    <span class="block mt-1 font-normal text-blue-700 ${questionClass}">${q.id}. ${q.text}</span>
+
+                </h3>
+
+                <textarea id="answer-${q.id}" rows="3" class="w-full p-3 mb-3 border border-gray-400 rounded-md focus:outline-none ${textareaClass}" placeholder="أدخل ترجمتك هنا..."></textarea>
+
+                <button class="check-btn bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg" onclick="checkAnswer(${q.id})">تأكيد الحل</button>
+
+                <div id="result-${q.id}" class="result p-3 mt-3 rounded-md hidden text-ar"></div>
+
+                <div id="solution-${q.id}" class="solution p-3 mt-3 rounded-md text-sm hidden text-ar">
+
+                    <span class="font-bold">الإجابة الصحيحة:</span> <span class="${textareaClass}">${solutionText}</span>
+
+                </div>
+
+            `;
+
+            quizContainer.appendChild(card);
+
+        });
+
+    }
+
+    // دالة تطبيع النص (Normalize text) لزيادة دقة المطابقة (لم يتم تغييرها لأنها تعمل بشكل صحيح لكلا اللغتين)
+
+    function normalizeText(text) {
+
+        if (!text) return "";
+
+        // إزالة علامات الترقيم وتوحيد المسافات
+
+        text = text.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()؟]/g, " ").replace(/\s\s+/g, ' ').trim();
+
+        // إزالة علامات التشكيل العربية وتوحيد الهمزات والألفات
+
+        text = text.replace(/[\u064B-\u0652]/g, ""); // إزالة التشكيل
+
+        text = text.replace(/أ|إ|آ/g, 'ا'); // توحيد الهمزات على الألف
+
+        text = text.replace(/ة/g, 'ت'); // توحيد التاء المربوطة والمفتوحة (مهم في الترجمة)
+
+        return text.toLowerCase();
+
+    }
+
+    // دالة فحص الحل (Check Answer)
+
+    function checkAnswer(questionId) {
+
+        const question = questions.find(q => q.id === questionId);
+
+        if (!question) return;
+
+        const answerElement = document.getElementById(`answer-${questionId}`);
+
+        const resultElement = document.getElementById(`result-${questionId}`);
+
+        const solutionElement = document.getElementById(`solution-${questionId}`);
+
+        const buttonElement = answerElement.nextElementSibling;
+
+        if (buttonElement.disabled) return; 
+
+        const studentAnswer = normalizeText(answerElement.value);
+
+        let score = 0;
+
+        const isEnglishToArabic = question.direction === "English to Arabic";
+
+        const correctAnswers = isEnglishToArabic ? question.correct_ar : question.correct_en;
+
+        const partialMatches = isEnglishToArabic ? question.partial_ar : question.partial_en;
+
+        let feedback = "";
+
+        let className = "bg-red-200 text-red-800"; // Default: Incorrect
+
+        // 1. Full Match (5 points)
+
+        const isFullMatch = correctAnswers.some(correct => normalizeText(correct) === studentAnswer);
+
+        
+
+        if (isFullMatch) {
+
+            score = 5;
+
+            feedback = "إجابة ممتازة ومطابقة! درجة كاملة (5/5).";
+
+            className = "bg-green-200 text-green-800";
+
+        } 
+
+        // 2. Partial Match (2.5 points)
+
+        else {
+
+            // Check if student's answer contains any partial match phrase
+
+            const isPartial = partialMatches.some(phrase => studentAnswer.includes(normalizeText(phrase)));
+
+            if (isPartial) {
+
+                score = 2.5;
+
+                feedback = "إجابة جزئية أو تحتوي على كلمات مفتاحية صحيحة. تحصل على نصف الدرجة (2.5/5).";
+
+                className = "bg-yellow-200 text-yellow-800";
+
+            } 
+
+            // 3. Incorrect (0 points)
+
+            else {
+
+                score = 0;
+
+                feedback = "الإجابة غير صحيحة أو غير كاملة. تحصل على 0/5.";
+
+                className = "bg-red-200 text-red-800";
+
+            }
+
+        }
+
+        // تحديث النتيجة الكلية (يتم الإضافة فقط إذا كانت أول مرة يتم فيها تقييم السؤال)
+
+        if (!buttonElement.dataset.checked) {
+
+            totalScore += score;
+
+            finalScoreDisplay.textContent = totalScore;
+
+            buttonElement.dataset.checked = 'true';
+
+        }
+
+        // عرض النتيجة والحل
+
+        resultElement.textContent = feedback;
+
+        resultElement.className = `result p-3 mt-3 rounded-md ${className} block text-ar`;
+
+        solutionElement.classList.remove('hidden');
+
+        
+
+        // تعطيل الزر ومنطقة النص
+
+        buttonElement.disabled = true;
+
+        answerElement.disabled = true;
+
+        // فحص ما إذا كانت جميع الأسئلة قد تم الإجابة عليها
+
+        if (document.querySelectorAll('.check-btn:disabled').length === questions.length) {
+
+            finalScoreSection.style.display = 'block';
+
+        }
+
+    }
+
+    // تهيئة الصفحة
+
+    document.addEventListener('DOMContentLoaded', renderQuestions);
+
+</script>
+
+</body>
+
+</html>
+
